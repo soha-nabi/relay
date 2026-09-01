@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relay | Payment Recovery Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+
+  <!-- ========================================== -->
+  <!-- SIDEBAR                                    -->
+  <!-- ========================================== -->
+  <aside class="sidebar">
+    <a class="brand" href="/app" aria-label="Relay Recovery">
+      <span class="brand-mark">R</span><span>relay</span>
+    </a>
+
+    <!-- Dynamic Role Navigation -->
+    <nav id="role-nav" aria-label="Primary navigation">
+      <!-- Injected via JavaScript based on role -->
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="/docs" target="_blank">
+        <span class="nav-icon">📖</span> API Docs
+      </a>
+      <a class="nav-item text-red" href="#" id="btn-signout">
+        <span class="nav-icon">🚪</span> Sign Out
+      </a>
+      <div class="workspace">
+        <span class="avatar" id="sidebar-avatar">RP</span>
+        <div>
+          <b id="sidebar-username">User</b>
+          <small id="sidebar-role-badge">Role</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- MAIN APP CONTAINER                         -->
+  <!-- ========================================== -->
+  <main id="app-main" hidden>
+    
+    <!-- Topbar Header -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div>
+          <p class="eyebrow" id="topbar-eyebrow">PORTAL</p>
+          <h1 id="topbar-welcome">Welcome</h1>
+        </div>
+      </div>
+      <div id="topbar-actions">
+        <!-- Merchant CSV Upload Button (shown for merchant) -->
+        <label class="upload-button" id="merchant-upload-btn" for="csv-file" hidden>
+          <span class="upload-icon">＋</span> <span id="upload-text">Upload CSV</span>
+          <input id="csv-file" type="file" accept=".csv">
+        </label>
+      </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- 1. ADMIN DASHBOARD VIEWS                   -->
+    <!-- ========================================== -->
+    <div id="admin-views" class="role-view-container" hidden>
+      
+      <!-- View: Admin Platform Overview -->
+      <div id="view-admin-overview" class="spa-view active-view">
+        <p class="eyebrow">PLATFORM OVERVIEW</p>
+        <div class="kpi-grid">
+          <article class="kpi-card">
+            <p>Total Platform Volume</p>
+            <h2 id="adm-total-vol">₹12,45,000</h2>
+            <span class="success-dot">●</span>
+          </article>
+          <article class="kpi-card">
+            <p>Total Recovered</p>
+            <h2 id="adm-total-rec">₹3,48,200</h2>
+            <span class="success-dot">●</span>
+          </article>
+          <article class="kpi-card">
+            <p>Global Recovery Rate</p>
+            <h2 id="adm-global-rate">45.8%</h2>
+          </article>
+          <article class="kpi-card">
+            <p>Active Merchants</p>
+            <h2 id="adm-active-merch">14</h2>
+          </article>
+        </div>
+
+        <div class="panel">
+          <h3>Platform Health & Recovery Metrics</h3>
+          <p class="subtle mb-4">Cross-merchant recovery performance categorized by payment method.</p>
+          
+          <div class="metrics-grid mb-4">
+            <div class="metric-box">
+              <small>UPI Recovery Rate</small>
+              <b class="success-text" id="adm-upi-rate">84.1%</b>
+            </div>
+            <div class="metric-box">
+              <small>Card Recovery Rate</small>
+              <b class="text-blue" id="adm-card-rate">62.4%</b>
+            </div>
+            <div class="metric-box">
+              <small>Wallet Recovery Rate</small>
+              <b class="text-purple" id="adm-wallet-rate">78.5%</b>
+            </div>
+            <div class="metric-box">
+              <small>NetBanking Recovery</small>
+              <b class="warning-text" id="adm-nb-rate">51.2%</b>
+            </div>
+            <div class="metric-box">
+              <small>System Uptime</small>
+              <b class="success-text">99.98%</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading mb-2">
+            <div>
+              <h3>Recent Platform Merchants</h3>
+              <p class="subtle">Top merchants operating on Relay Recovery Intelligence.</p>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Merchant ID</th>
+                  <th>Business Name</th>
+                  <th>Plan</th>
+                  <th>Total Volume</th>
+                  <th>Recovery Rate</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="adm-merchants-summary-body">
+                <tr><td colspan="6" class="text-center subtle">Loading merchants...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Admin Merchants List -->
+      <div id="view-admin-merchants" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">MERCHANT MANAGEMENT</p>
+              <h2>All Registered Merchants</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Merchant ID</th>
+                  <th>Business Name</th>
+                  <th>Username</th>
+                  <th>Plan</th>
+                  <th>Uploaded Datasets</th>
+                  <th>Total Volume</th>
+                  <th>Recovery Rate</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="adm-merchants-full-body">
+                <tr><td colspan="8" class="text-center subtle">Loading merchants...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Admin Users List -->
+      <div id="view-admin-users" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">USER MANAGEMENT</p>
+              <h2>Platform Users & Roles</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Last Login</th>
+                </tr>
+              </thead>
+              <tbody id="adm-users-body">
+                <tr><td colspan="5" class="text-center subtle">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Admin Datasets -->
+      <div id="view-admin-datasets" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">DATA MANAGEMENT</p>
+              <h2>Platform Datasets & Recovery Metrics</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Owner</th>
+                  <th>Filename</th>
+                  <th>Rows</th>
+                  <th>Total Amount</th>
+                  <th>Recovered</th>
+                  <th>Active Sessions</th>
+                  <th>Uploaded At</th>
+                </tr>
+              </thead>
+              <tbody id="adm-datasets-body">
+                <tr><td colspan="7" class="text-center subtle">Loading datasets...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. MERCHANT DASHBOARD VIEWS                -->
+    <!-- ========================================== -->
+    <div id="merchant-views" class="role-view-container" hidden>
+      
+      <!-- View: Merchant Recovery Overview & Workflow -->
+      <div id="view-merchant-overview" class="spa-view active-view">
+        
+        <!-- KPI Grid -->
+        <section id="merchant-kpis">
+          <div class="kpi-grid">
+            <article class="kpi-card"><p>Revenue at risk</p><h2 id="revenue-risk">—</h2><span class="danger-dot">●</span></article>
+            <article class="kpi-card"><p>Recoverable revenue</p><h2 id="recoverable-rev">—</h2></article>
+            <article class="kpi-card"><p>Recovery rate</p><h2 id="recovery-rate">—</h2><span class="success-dot">●</span></article>
+            <article class="kpi-card"><p>Recovered revenue</p><h2 id="recovered-rev">—</h2></article>
+          </div>
+          <h3 class="mb-4 mt-2">What needs attention</h3>
+        </section>
+
+        <!-- Progressive Flow Stepper -->
+        <div id="progress-indicator" class="progress-indicator" hidden>
+          <span class="step-dot" id="dot-1">1. Customer</span> → 
+          <span class="step-dot" id="dot-2">2. Status</span> → 
+          <span class="step-dot" id="dot-3">3. Action</span> → 
+          <span class="step-dot" id="dot-4">4. Review</span> → 
+          <span class="step-dot" id="dot-5">5. Recovery</span> → 
+          <span class="step-dot" id="dot-6">6. Outcome</span>
+        </div>
+
+        <!-- STEP 1: Search Customer -->
+        <section id="step1-find" class="panel step-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">STEP 1</p>
+              <h2>Find a customer</h2>
+              <p class="subtle">Enter a customer ID to see payment health and recovery recommendations.</p>
+            </div>
+          </div>
+          <form id="customer-form" class="customer-search">
+            <input id="customer-id" required placeholder="CUST000052" aria-label="Customer ID">
+            <button class="primary-button" type="submit" id="btn-search-cust">Search</button>
+          </form>
+          <div class="recent-searches">
+            <small class="subtle">Quick test:</small> 
+            <button type="button" class="tag-btn btn-recent" data-id="CUST000052">CUST000052 (Attention)</button>
+            <button type="button" class="tag-btn btn-recent" data-id="CUST001467">CUST001467 (Healthy)</button>
+            <button type="button" class="tag-btn btn-recent" data-id="CUST001887">CUST001887 (Unrecoverable)</button>
+          </div>
+
+          <!-- Webhook Ingestion Demo Controls -->
+          <div class="webhook-sim-box mt-3" style="border-top: 1px dashed var(--line); padding-top: 12px; margin-top: 14px;">
+            <p class="eyebrow" style="font-size: 10px;">DEMO / TEST · SIMULATE PAYMENT WEBHOOK EVENT</p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+              <button type="button" class="ghost-button btn-small" id="btn-sim-webhook-failed">Simulate Payment Failed</button>
+              <button type="button" class="ghost-button btn-small" id="btn-sim-webhook-captured">Simulate Payment Captured</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2: Customer Status -->
+        <section id="step2-status" class="panel step-panel" hidden>
+          <!-- State A: Healthy -->
+          <div id="status-healthy" hidden>
+            <div class="status-header healthy">
+              <span class="status-icon">✓</span> <h2>Customer is healthy</h2>
+            </div>
+            <p class="subtle mb-4">No recovery action is needed for this account.</p>
+            <div class="metrics-grid">
+              <div class="metric-box"><small>Transactions</small><b id="h-txn-count">—</b></div>
+              <div class="metric-box"><small>Recovery rate</small><b id="h-rec-rate">—</b></div>
+              <div class="metric-box"><small>Current status</small><b class="success-text">Healthy</b></div>
+              <div class="metric-box"><small>Primary method</small><b id="h-method">—</b></div>
+              <div class="metric-box"><small>Risk score</small><b id="h-risk">—</b></div>
+            </div>
+            <div class="actions-row mt-4">
+              <button class="ghost-button btn-back-home">Back to customers</button>
+            </div>
+          </div>
+
+          <!-- State B: Needs Attention -->
+          <div id="status-attention" hidden>
+            <div class="status-header attention">
+              <span class="status-icon warning">!</span> <h2>Payment needs attention</h2>
+            </div>
+            <div class="metrics-grid mb-4">
+              <div class="metric-box"><small>Amount</small><b id="a-amount">—</b></div>
+              <div class="metric-box"><small>Reason</small><b id="a-reason">—</b></div>
+              <div class="metric-box"><small>Risk</small><b id="a-risk" class="danger-text">—</b></div>
+              <div class="metric-box"><small>Recovery Potential</small><b id="a-potential">—</b></div>
+            </div>
+            <p class="mb-4">This payment failed, but the customer has high recovery probability.</p>
+            <div class="actions-row">
+              <button id="btn-view-recommendation" class="primary-button">View recommended recovery</button>
+              <button class="ghost-button" id="btn-open-details">View details</button>
+            </div>
+          </div>
+
+          <!-- State C: Unrecoverable -->
+          <div id="status-unrecoverable" hidden>
+            <div class="status-header unrecoverable">
+              <span class="status-icon danger">×</span> <h2>Recovery not recommended</h2>
+            </div>
+            <p class="mb-4 text-ink" id="u-reason">This payment is a permanent failure and should not be retried.</p>
+            <div class="actions-row">
+              <button class="ghost-button" id="btn-open-details-unrec">View details</button>
+              <button class="ghost-button btn-back-home">Back to customers</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3: Recommendation -->
+        <section id="step3-recommendation" class="panel step-panel" hidden>
+          <p class="eyebrow">STEP 3</p>
+          <h2>Recommended next step</h2>
+          
+          <div class="strategy-selector-row mb-3 mt-3" style="display: flex; gap: 16px;">
+            <label class="radio-card" style="cursor: pointer; padding: 6px 12px; margin: 0;">
+              <input type="radio" name="strategy-type" id="strat-type-smart" value="smart" checked>
+              <span style="font-weight: 600; margin-left: 6px;">Smart Retry</span>
+            </label>
+            <label class="radio-card" style="cursor: pointer; padding: 6px 12px; margin: 0;">
+              <input type="radio" name="strategy-type" id="strat-type-custom" value="custom">
+              <span style="font-weight: 600; margin-left: 6px;">Custom Schedule</span>
+            </label>
+          </div>
+
+          <div id="smart-retry-panel">
+            <h3 class="strategy-title mt-2 mb-2 text-blue" id="rec-strategy">—</h3>
+            <p class="subtle mb-4" id="rec-why">—</p>
+            
+            <div class="metrics-grid mb-4">
+              <div class="metric-box"><small>Recommended retry</small><b id="rec-timing">Tomorrow · 10:30 AM</b></div>
+              <div class="metric-box"><small>Expected recovery</small><b id="rec-amount">—</b></div>
+              <div class="metric-box"><small>Confidence</small><b id="rec-confidence">—</b></div>
+            </div>
+          </div>
+
+          <div id="custom-schedule-panel" class="mb-4" hidden>
+            <h3 class="strategy-title mt-2 mb-2 text-blue">Custom Retry Schedule</h3>
+            <p class="subtle mb-3">Configure up to 3 retry attempts with custom delays.</p>
+            
+            <div id="custom-schedule-controls">
+              <div class="schedule-config-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
+                <div class="form-group mb-0">
+                  <label for="custom-att-1"><small>Attempt 1</small></label>
+                  <select id="custom-att-1" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color, #cbd5e1);">
+                    <option value="0" selected>Immediately</option>
+                    <option value="1">1 hour</option>
+                    <option value="4">4 hours</option>
+                    <option value="12">12 hours</option>
+                    <option value="24">24 hours</option>
+                  </select>
+                </div>
+                <div class="form-group mb-0">
+                  <label for="custom-att-2"><small>Attempt 2</small></label>
+                  <select id="custom-att-2" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color, #cbd5e1);">
+                    <option value="none">Disabled</option>
+                    <option value="12">12 hours</option>
+                    <option value="24" selected>24 hours</option>
+                    <option value="48">48 hours</option>
+                    <option value="72">72 hours</option>
+                  </select>
+                </div>
+                <div class="form-group mb-0">
+                  <label for="custom-att-3"><small>Attempt 3</small></label>
+                  <select id="custom-att-3" class="form-control" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color, #cbd5e1);">
+                    <option value="none">Disabled</option>
+                    <option value="48">48 hours</option>
+                    <option value="72" selected>72 hours</option>
+                    <option value="96">96 hours</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notice for Restricted / Non-recoverable / Customer-action failures -->
+            <div id="custom-schedule-restricted" class="panel mt-3" style="background: var(--bg-subtle, #f8fafc); border-left: 4px solid var(--warning, #f59e0b); padding: 16px;" hidden>
+              <p id="custom-restricted-msg" class="mb-3" style="font-weight: 500; font-size: 13.5px;"></p>
+              <div id="custom-restricted-actions" class="actions-row" style="margin-top: 12px; display: flex; gap: 8px;">
+                <button type="button" id="btn-custom-alt-method" class="primary-button" style="display:none;">Choose Alternative Payment</button>
+                <button type="button" id="btn-custom-go-back" class="ghost-button">Go Back</button>
+              </div>
+            </div>
+
+            <p id="custom-schedule-error" class="danger-text mt-2" hidden></p>
+          </div>
+          
+          <div class="actions-row">
+            <button id="btn-prep-recovery" class="primary-button">Use Smart Retry</button>
+            <button id="btn-choose-method" class="ghost-button">Choose Another Method</button>
+          </div>
+        </section>
+
+        <!-- STEP 4: Review -->
+        <section id="step4-review" class="panel step-panel" hidden>
+          <p class="eyebrow">STEP 4</p>
+          <h2 class="mb-4">Review before starting</h2>
+          
+          <div class="review-details mb-4">
+            <div class="review-row"><span>Customer:</span><b id="rev-cust">—</b></div>
+            <div class="review-row"><span>Amount:</span><b id="rev-amount">—</b></div>
+            <div class="review-row"><span>Selected strategy:</span><b id="rev-method">—</b></div>
+            <div class="review-row" id="rev-schedule-row"><span>Schedule:</span><b id="rev-schedule">1. Immediately, 2. 24 hours, 3. 72 hours</b></div>
+            <div class="review-row"><span>Maximum attempts:</span><b id="rev-attempts">3</b></div>
+            <div class="review-row"><span>Stop after successful payment:</span><b class="success-text">Yes</b></div>
+            <div class="review-row"><span>Expected recovery:</span><b id="rev-expected">—</b></div>
+          </div>
+
+          <div class="actions-row">
+            <button id="btn-start-recovery" class="primary-button">Start Recovery</button>
+            <button id="btn-back-rec" class="ghost-button">Go Back</button>
+          </div>
+        </section>
+
+        <!-- STEP 5: Recovery Execution -->
+        <section id="step5-started" class="panel step-panel text-center" hidden>
+          <div class="spinner mb-4" id="step5-spinner"></div>
+          <h2 class="mb-2" id="step5-title">Recovery started</h2>
+          
+          <div class="review-details text-left mb-4 mx-auto" style="max-width: 320px;">
+            <div class="review-row"><span>Customer:</span><b id="start-cust">—</b></div>
+            <div class="review-row"><span>Amount:</span><b id="start-amount">—</b></div>
+            <div class="review-row"><span>Strategy:</span><b id="start-method">—</b></div>
+          </div>
+          
+          <p class="mb-2 text-ink">Status: <b class="text-blue" id="start-status">Waiting for customer</b></p>
+          <p class="subtle mb-4" id="start-attempt">Attempt: 1</p>
+
+          <div class="actions-row justify-center" id="step5-actions" style="display:flex; gap:10px; justify-content:center;" hidden>
+            <button id="btn-open-cust-ui" class="primary-button">Open Customer Payment</button>
+            <button id="btn-copy-payment-link" class="ghost-button">Copy Payment Link</button>
+          </div>
+        </section>
+
+        <!-- STEP 6: Customer Checkout Simulation -->
+        <section id="step6-customer-steps" class="panel step-panel" hidden>
+          <div id="cns-payment-container">
+            <p class="eyebrow">CUSTOMER CHECKOUT DEMO</p>
+            <h2 class="mb-2">Complete payment recovery</h2>
+            <p id="cns-intro" class="subtle mb-4"></p>
+            
+            <div class="review-details mb-4">
+              <div class="review-row"><span>Amount due:</span><b id="cns-confirm-amt" class="text-blue" style="font-size: 18px;">—</b></div>
+            </div>
+            
+            <div id="cns-dynamic-actions" class="actions-row" style="flex-direction: column; gap: 8px;">
+              <!-- Dynamic recovery buttons -->
+            </div>
+          </div>
+
+          <!-- Checkout Confirm State -->
+          <div id="cns-confirm-container" hidden>
+            <h2 class="mb-2" id="cns-confirm-title">Confirm Payment</h2>
+            <p class="subtle mb-4">You are confirming payment of <b id="cns-final-amt">—</b>.</p>
+            <button id="btn-cust-process" class="primary-button w-100 mb-2">Confirm Payment</button>
+            <button id="btn-cust-cancel" class="ghost-button w-100">Cancel</button>
+          </div>
+
+          <!-- Checkout Success State -->
+          <div id="cns-success-container" hidden class="text-center">
+            <div class="status-header success justify-center mb-3">
+              <span class="status-icon success-bg text-white">✓</span>
+            </div>
+            <h2 class="mb-2">Payment successfully recovered!</h2>
+            <p class="subtle mb-4">Transaction completed and captured.</p>
+            <button id="btn-return-merchant" class="primary-button">Return to Merchant</button>
+          </div>
+        </section>
+
+        <!-- STEP 7: Outcome -->
+        <section id="step7-outcome" class="panel step-panel text-center" hidden>
+          <div class="status-header success justify-center mb-3">
+            <span class="status-icon success-bg text-white">✓</span>
+            <h2>Payment recovered</h2>
+          </div>
+          <h1 class="mb-4 text-blue" id="out-amount">— recovered</h1>
+          
+          <div class="review-details text-left mb-4 mx-auto" style="max-width: 350px;">
+            <div class="review-row"><span>Customer:</span><b id="out-cust">—</b></div>
+            <div class="review-row"><span>Strategy:</span><b id="out-method">—</b></div>
+            <div class="review-row"><span>Attempts:</span><b id="out-attempts">1</b></div>
+          </div>
+          
+          <p class="success-text mb-4">Recovery workflow completed successfully.</p>
+          
+          <div class="actions-row justify-center">
+            <button class="ghost-button" id="btn-view-audit">View Audit Trail</button>
+            <button class="primary-button btn-back-home">Done</button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- View: Merchant Customer Directory -->
+      <div id="view-merchant-customers" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">DIRECTORY</p>
+              <h2>Customer Recovery Database</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Customer ID</th>
+                  <th>Status</th>
+                  <th>Risk Score</th>
+                  <th>Revenue at Risk</th>
+                  <th>Recovery Rate</th>
+                </tr>
+              </thead>
+              <tbody id="merchant-customer-table-body">
+                <tr><td colspan="5" class="text-center subtle">Loading customer data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Merchant Performance Analytics -->
+      <div id="view-merchant-performance" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">ANALYTICS</p>
+              <h2>Recovery Performance by Payment Status</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Payment Status</th>
+                  <th>Transaction Count</th>
+                  <th>Total Amount</th>
+                  <th>Total Recovered</th>
+                  <th>Average Amount</th>
+                </tr>
+              </thead>
+              <tbody id="merchant-perf-table-body">
+                <tr><td colspan="5" class="text-center subtle">Loading analytics...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Merchant Automations (No-Code Builder) -->
+      <div id="view-merchant-automations" class="spa-view" hidden>
+
+        <!-- List Panel -->
+        <div id="automation-list-panel">
+          <div class="panel-heading mb-3" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <p class="eyebrow">RECOVERY AUTOMATIONS</p>
+              <h2>No-Code Recovery Workflows</h2>
+              <p class="subtle">Define WHEN → IF → THEN → STOP WHEN rules using existing recovery capabilities.</p>
+            </div>
+            <button id="btn-create-automation" class="primary-button">+ Create Automation</button>
+          </div>
+
+          <div id="automation-list-container" class="panel">
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Automation</th>
+                    <th>Trigger</th>
+                    <th>First Action</th>
+                    <th>Customers Affected</th>
+                    <th>Last Triggered</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="automation-items-body">
+                  <tr><td colspan="6" class="text-center subtle" style="padding:2rem;">Loading automations...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Builder Panel (hidden by default) -->
+        <div id="automation-builder-panel" hidden>
+          <div class="panel-heading mb-3" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <p class="eyebrow">AUTOMATION BUILDER</p>
+              <h2 id="auto-builder-title">Create Automation</h2>
+            </div>
+            <button id="btn-auto-cancel" class="ghost-button">← Back to list</button>
+          </div>
+
+          <div class="panel">
+            <p id="auto-builder-error" class="danger-text mb-3" hidden></p>
+
+            <!-- Name -->
+            <div class="form-group mb-4">
+              <label><b>Automation Name</b></label>
+              <input id="auto-name" type="text" class="form-control" placeholder="e.g. Failed Payment Recovery" style="width:100%;max-width:420px;">
+            </div>
+
+            <!-- WHEN -->
+            <div class="mb-4">
+              <p class="eyebrow">WHEN</p>
+              <select id="auto-trigger" class="form-control" style="width:100%;max-width:320px;padding:8px;border-radius:6px;">
+                <option value="payment_failed">Payment Failed</option>
+                <option value="payment_failed_soft">Soft Decline Failed</option>
+                <option value="payment_failed_hard">Hard Decline Failed</option>
+              </select>
+            </div>
+
+            <!-- IF Conditions -->
+            <div class="mb-4">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <p class="eyebrow" style="margin:0;">IF CONDITIONS (all must match)</p>
+                <button id="btn-add-condition" class="ghost-button btn-sm">+ Add condition</button>
+              </div>
+              <div id="auto-conditions-list"></div>
+            </div>
+
+            <!-- THEN Actions -->
+            <div class="mb-4">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <p class="eyebrow" style="margin:0;">THEN ACTIONS (in order)</p>
+                <button id="btn-add-action" class="ghost-button btn-sm">+ Add action</button>
+              </div>
+              <div id="auto-actions-list"></div>
+            </div>
+
+            <!-- STOP WHEN -->
+            <div class="mb-4">
+              <p class="eyebrow">STOP WHEN</p>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <label><input type="checkbox" class="auto-stop-rule" id="stop-rule-payment-succeeds" value="payment_succeeds" data-default="true" checked> Payment succeeds</label>
+                <label><input type="checkbox" class="auto-stop-rule" id="stop-rule-max-attempts-reached" value="max_attempts_reached" data-default="true" checked> Maximum retry attempts reached</label>
+                <label><input type="checkbox" class="auto-stop-rule" id="stop-rule-permanent-failure" value="permanent_failure" data-default="true" checked> Permanent failure detected</label>
+                <label><input type="checkbox" class="auto-stop-rule" id="stop-rule-non-recoverable" value="non_recoverable"> Customer is non-recoverable</label>
+              </div>
+            </div>
+
+            <!-- Plain-English Preview -->
+            <div class="mb-4">
+              <button id="btn-auto-preview" class="ghost-button">Preview in plain English</button>
+              <div id="auto-preview-box" class="panel mt-3" style="background:var(--bg-subtle,#f8fafc);" hidden>
+                <p class="eyebrow">YOUR AUTOMATION WILL:</p>
+                <ol id="auto-preview-steps" style="margin:0 0 0 1.2rem;padding:0;line-height:1.9;"></ol>
+              </div>
+            </div>
+
+            <!-- Save -->
+            <div class="actions-row">
+              <button id="btn-auto-save" class="primary-button">Save Automation</button>
+              <button id="btn-auto-cancel-2" class="ghost-button">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. USER DASHBOARD VIEWS                    -->
+    <!-- ========================================== -->
+    <div id="user-views" class="role-view-container" hidden>
+      
+      <!-- View: User Payment Status -->
+      <div id="view-user-payments" class="spa-view active-view">
+        <p class="eyebrow">PAYMENT OVERVIEW</p>
+        <div class="kpi-grid-3">
+          <article class="kpi-card">
+            <p>Total Transactions</p>
+            <h2 id="usr-total-txns">4</h2>
+          </article>
+          <article class="kpi-card">
+            <p>Failed / Needs Attention</p>
+            <h2 id="usr-failed-txns" class="danger-text">2</h2>
+            <span class="danger-dot">●</span>
+          </article>
+          <article class="kpi-card">
+            <p>Outstanding Amount</p>
+            <h2 id="usr-failed-amount">₹6,749</h2>
+          </article>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">ATTENTION REQUIRED</p>
+              <h2>Pending & Failed Payments</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Merchant</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Failure Reason</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="usr-failed-table-body">
+                <tr><td colspan="7" class="text-center subtle">Loading payments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: User Transaction History -->
+      <div id="view-user-history" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-3">
+            <div>
+              <p class="eyebrow">STATEMENT</p>
+              <h2>Complete Transaction History</h2>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Transaction ID</th>
+                  <th>Merchant</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Reason / Details</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="usr-full-history-body">
+                <tr><td colspan="6" class="text-center subtle">Loading transaction history...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: User Recovery Instructions -->
+      <div id="view-user-instructions" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-4">
+            <div>
+              <p class="eyebrow">SELF-SERVICE GUIDES</p>
+              <h2>Payment Recovery Instructions</h2>
+              <p class="subtle">Simple guides to resolve failed payments and avoid checkout drops.</p>
+            </div>
+          </div>
+          <div id="usr-instructions-list">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- View: User Support -->
+      <div id="view-user-support" class="spa-view" hidden>
+        <div class="panel">
+          <div class="panel-heading mb-4">
+            <div>
+              <p class="eyebrow">CUSTOMER CARE</p>
+              <h2>Support Information & Helpdesk</h2>
+            </div>
+          </div>
+          <div class="support-grid mb-4">
+            <div class="support-card">
+              <p class="eyebrow">24/7 HELPLINE</p>
+              <h3 class="text-blue mt-2">+91 1800-123-4567</h3>
+              <p class="subtle mt-2">Toll-free customer support</p>
+            </div>
+            <div class="support-card">
+              <p class="eyebrow">EMAIL SUPPORT</p>
+              <h3 class="text-blue mt-2">support@relay.razorpay.com</h3>
+              <p class="subtle mt-2">Average response under 15 mins</p>
+            </div>
+            <div class="support-card">
+              <p class="eyebrow">ASSISTANCE</p>
+              <h3 class="success-text mt-2">Live 24x7</h3>
+              <p class="subtle mt-2">Bank & UPI dispute desk</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modals & Drawers -->
+    <div id="drawer-details" class="drawer-overlay" hidden>
+      <div class="drawer">
+        <div class="drawer-header">
+          <h3>Customer Details</h3>
+          <button class="icon-btn btn-close-drawer">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div class="metrics-grid mb-4">
+            <div class="metric-box w-100"><small>Customer</small><b id="det-cust">—</b></div>
+            <div class="metric-box"><small>Risk Score</small><b id="det-risk">—</b></div>
+            <div class="metric-box"><small>Recovery Rate</small><b id="det-rate">—</b></div>
+          </div>
+          <div class="review-details">
+            <div class="review-row"><span>Payment history:</span><b id="det-history">— txns</b></div>
+            <div class="review-row"><span>Failures:</span><b id="det-failures">—</b></div>
+            <div class="review-row"><span>Failure reason:</span><b id="det-reason">—</b></div>
+            <div class="review-row"><span>Primary method:</span><b id="det-method">—</b></div>
+          </div>
+          <div class="mt-4 text-center">
+            <button class="ghost-button btn-close-drawer">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="drawer-audit" class="drawer-overlay" hidden>
+      <div class="drawer">
+        <div class="drawer-header">
+          <h3>Audit Trail</h3>
+          <button class="icon-btn btn-close-drawer">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div id="audit-log-container" class="audit-list"></div>
+          <div class="mt-4 text-center">
+            <button class="ghost-button btn-close-drawer">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-strategy" class="modal-overlay" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Choose Recovery Method</h3>
+          <button class="icon-btn btn-close-modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="strategy-options">
+            <label class="radio-card"><input type="radio" name="strat" value="Smart Retry" checked> <span>Smart Retry</span></label>
+            <label class="radio-card"><input type="radio" name="strat" value="Retry Payment"> <span>Retry Payment</span></label>
+            <label class="radio-card"><input type="radio" name="strat" value="Offer Digital Wallet"> <span>Offer Digital Wallet</span></label>
+            <label class="radio-card"><input type="radio" name="strat" value="Offer Alternative Payment Method"> <span>Update Payment Method</span></label>
+            <label class="radio-card"><input type="radio" name="strat" value="High Priority Recovery Campaign"> <span>Recovery Campaign</span></label>
+          </div>
+          <div class="actions-row justify-center mt-4">
+            <button class="ghost-button btn-close-modal">Cancel</button>
+            <button class="primary-button" id="btn-save-strategy">Use Selected Method</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p id="toast" role="status" aria-live="polite"></p>
+  </main>
+
+  <!-- ========================================== -->
+  <!-- LOGIN MODAL / OVERLAY                      -->
+  <!-- ========================================== -->
+  <div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-header text-center mb-4">
+        <span class="brand-mark mx-auto mb-2" style="width: 44px; height: 44px; font-size: 22px;">R</span>
+        <h2 id="auth-title">Sign In to Relay</h2>
+        <p class="subtle" id="auth-subtitle">Select a role or enter your credentials</p>
+      </div>
+
+      <div id="auth-error" class="auth-error" hidden></div>
+
+      <form id="auth-form">
+        <div class="form-group" id="group-name" style="display: none;">
+          <label for="auth-name">Full Name</label>
+          <input type="text" id="auth-name" placeholder="Alex Morgan" autocomplete="name">
+        </div>
+        <div class="form-group" id="group-email" style="display: none;">
+          <label for="auth-email">Email Address</label>
+          <input type="email" id="auth-email" placeholder="alex@company.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="auth-username">Username</label>
+          <input type="text" id="auth-username" required placeholder="admin / merchant / user" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" required placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button type="submit" id="btn-auth-submit" class="primary-button w-100 mt-2">Sign In</button>
+      </form>
+
+      <div class="text-center mt-3">
+        <button type="button" id="btn-toggle-auth-mode" style="background: none; border: none; color: var(--accent, #6366f1); cursor: pointer; font-size: 13px; text-decoration: underline;">
+          Need an account? Sign up
+        </button>
+      </div>
+
+      <div class="mt-4 text-center">
+        <p class="eyebrow">Quick Test Demo Roles</p>
+        <div class="quick-login-grid">
+          <button type="button" class="quick-btn" id="btn-quick-admin">
+            <b>Admin</b>
+            <small>admin123</small>
+          </button>
+          <button type="button" class="quick-btn" id="btn-quick-merchant">
+            <b>Merchant</b>
+            <small>merchant123</small>
+          </button>
+          <button type="button" class="quick-btn" id="btn-quick-user">
+            <b>User</b>
+            <small>user123</small>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/dashboard.js"></script>
+</body>
+</html>

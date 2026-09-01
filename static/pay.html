@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Payment · Relay Recovery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-hover: #1d4ed8;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --red: #ef4444;
+      --red-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --canvas: #f8fafc;
+      --card-bg: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+    }
+
+    .pay-card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 440px;
+      padding: 28px 24px;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+      position: relative;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .secure-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      background: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 20px;
+    }
+
+    .amount-display {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .amount-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .amount-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+
+    .notice-box {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.45;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .notice-warning {
+      background: var(--warning-light);
+      border: 1px solid #fde68a;
+      color: #92400e;
+    }
+
+    .notice-danger {
+      background: var(--red-light);
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .notice-info {
+      background: var(--blue-light);
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+    }
+
+    .notice-success {
+      background: var(--green-light);
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 12px;
+    }
+
+    .methods-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .method-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #fff;
+    }
+
+    .method-option:hover {
+      border-color: var(--blue);
+      background: var(--blue-light);
+    }
+
+    .method-option.selected {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      box-shadow: 0 0 0 1px var(--blue);
+    }
+
+    .method-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .method-icon {
+      font-size: 20px;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+
+    .method-label {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .primary-btn {
+      width: 100%;
+      background: var(--blue);
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .primary-btn:hover {
+      background: var(--blue-hover);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .ghost-btn {
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s;
+    }
+
+    .ghost-btn:hover {
+      background: #f1f5f9;
+      color: var(--ink);
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result-state {
+      text-align: center;
+      padding: 16px 0 8px;
+    }
+
+    .result-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      font-weight: 800;
+      margin: 0 auto 16px;
+    }
+
+    .result-icon.success {
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    .result-icon.danger {
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .receipt-row:last-child {
+      border-bottom: none;
+    }
+
+    .receipt-row span {
+      color: var(--muted);
+    }
+
+    .receipt-row b {
+      color: var(--ink);
+    }
+
+    .demo-footer {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--line);
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .demo-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pay-card">
+    <div class="brand-header">
+      <div class="brand-title">
+        <span class="brand-icon">R</span> Relay Checkout
+      </div>
+      <div class="secure-badge">
+        🔒 256-bit Secure
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="view-loading" style="text-align:center; padding: 40px 0;">
+      <div class="spinner" style="border-top-color:var(--blue); border-color:#e2e8f0; width:28px; height:28px; margin: 0 auto 12px;"></div>
+      <p style="color:var(--muted); font-size:13px;">Loading payment details...</p>
+    </div>
+
+    <!-- Active Checkout Flow -->
+    <div id="view-checkout" hidden>
+      <div class="amount-display">
+        <div class="amount-label">Amount to Pay</div>
+        <div class="amount-value" id="disp-amount">₹0</div>
+      </div>
+
+      <!-- Failure explanation notice -->
+      <div class="notice-box notice-warning" id="disp-notice">
+        <span style="font-size:16px;">⚠️</span>
+        <span id="disp-message">Your previous payment could not be completed.</span>
+      </div>
+
+      <!-- Method selection list -->
+      <div id="methods-container">
+        <div class="section-title" id="methods-header">Select Payment Method</div>
+        <div class="methods-list" id="methods-list">
+          <!-- Populated dynamically based on failure category -->
+        </div>
+
+        <button type="button" id="btn-confirm-pay" class="primary-btn" disabled>
+          <span>Confirm & Pay</span>
+        </button>
+      </div>
+
+      <!-- Permanent failure notice (when payment cannot be retried) -->
+      <div id="view-permanent" hidden>
+        <div class="notice-box notice-danger">
+          <span style="font-size:16px;">🛑</span>
+          <div>
+            <b>Non-Recoverable Payment</b>
+            <p style="margin-top:2px;">This payment cannot be retried because the failure is permanent.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing State -->
+    <div id="view-processing" hidden style="text-align:center; padding: 30px 0;">
+      <div class="spinner" style="border-top-color:var(--blue); border-color:#e2e8f0; width:36px; height:36px; margin: 0 auto 16px;"></div>
+      <h3 style="font-size:16px; margin-bottom:6px;">Processing payment...</h3>
+      <p style="color:var(--muted); font-size:13px;" id="disp-processing-sub">Connecting securely to payment network</p>
+    </div>
+
+    <!-- Success Outcome -->
+    <div id="view-success" hidden class="result-state">
+      <div class="result-icon success">✓</div>
+      <h2 style="font-size:20px; font-weight:700; margin-bottom:4px; color:var(--green);">Payment successful</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">Your recovery payment has been processed.</p>
+
+      <div style="background:#f8fafc; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:20px; text-align:left;">
+        <div class="receipt-row"><span>Amount paid:</span><b id="recp-amount" style="color:var(--green); font-size:15px;">₹0</b></div>
+        <div class="receipt-row"><span>Payment method:</span><b id="recp-method">UPI</b></div>
+        <div class="receipt-row"><span>Reference:</span><b id="recp-ref">TXN_RECOVERED</b></div>
+        <div class="receipt-row"><span>Status:</span><b class="success-text" style="color:var(--green);">Completed</b></div>
+      </div>
+
+      <div class="notice-box notice-success" style="font-size:12px; margin-bottom:0;">
+        <span>✓</span>
+        <span>Merchant has been notified and transaction marked complete.</span>
+      </div>
+    </div>
+
+    <!-- Failed Outcome -->
+    <div id="view-failed" hidden class="result-state">
+      <div class="result-icon danger">×</div>
+      <h2 style="font-size:18px; font-weight:700; margin-bottom:4px; color:var(--red);">Payment couldn't be completed.</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:16px;" id="disp-failed-reason">The payment attempt was not successful.</p>
+
+      <button type="button" id="btn-retry-flow" class="primary-btn mb-2">Try Again</button>
+    </div>
+
+    <!-- Demo simulation footer -->
+    <div class="demo-footer">
+      <p>Relay Recovery Engine · Simulated Payment Flow</p>
+      <label class="demo-toggle">
+        <input type="checkbox" id="demo-simulate-fail">
+        <span>Test simulation failure</span>
+      </label>
+    </div>
+  </div>
+
+  <script>
+    const money = (v) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(v || 0);
+
+    const sessionId = window.location.pathname.split('/').filter(Boolean).pop();
+    let sessionData = null;
+    let selectedMethod = null;
+
+    async function loadPaymentDetails() {
+      try {
+        const res = await fetch(`/api/pay/${encodeURIComponent(sessionId)}`);
+        if (!res.ok) {
+          throw new Error('Payment session not found or expired.');
+        }
+        sessionData = await res.json();
+        renderPaymentUI(sessionData);
+      } catch (err) {
+        document.getElementById('view-loading').innerHTML = `
+          <div class="notice-box notice-danger">
+            <span>⚠️</span>
+            <span>${err.message || 'Unable to load payment details.'}</span>
+          </div>
+        `;
+      }
+    }
+
+    function renderPaymentUI(data) {
+      document.getElementById('view-loading').hidden = true;
+
+      // Check if already recovered
+      if (data.status === 'recovered' || data.status === 'completed') {
+        showSuccessState(data.recovered_amount || data.amount, 'Recovered Payment', data.transaction_id || 'COMPLETED');
+        return;
+      }
+
+      document.getElementById('view-checkout').hidden = false;
+      document.getElementById('disp-amount').textContent = money(data.amount);
+
+      // Check if permanent / non-recoverable
+      if (!data.can_pay || data.failure_category === 'permanent' || data.is_recoverable === false) {
+        document.getElementById('disp-notice').className = 'notice-box notice-danger';
+        document.getElementById('disp-message').textContent = data.message || "This payment cannot be retried.";
+        document.getElementById('methods-container').hidden = true;
+        document.getElementById('view-permanent').hidden = false;
+        return;
+      }
+
+      // Render notice
+      document.getElementById('disp-message').textContent = data.message || 'Your previous payment could not be completed.';
+      
+      // Render methods
+      const listEl = document.getElementById('methods-list');
+      listEl.innerHTML = '';
+      
+      const methods = data.methods || [];
+      methods.forEach((m, idx) => {
+        const item = document.createElement('div');
+        item.className = `method-option ${idx === 0 ? 'selected' : ''}`;
+        item.dataset.method = m.label;
+        item.innerHTML = `
+          <div class="method-left">
+            <span class="method-icon">${m.icon || '💳'}</span>
+            <span class="method-label">${m.label}</span>
+          </div>
+          <span style="color:var(--muted); font-size:16px;">›</span>
+        `;
+        item.addEventListener('click', () => {
+          document.querySelectorAll('.method-option').forEach(el => el.classList.remove('selected'));
+          item.classList.add('selected');
+          selectedMethod = m.label;
+          updateConfirmButton(selectedMethod);
+          
+          // Notify backend method selection audit event
+          fetch(`/api/pay/${encodeURIComponent(sessionId)}/select-method`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ payment_method: selectedMethod })
+          }).catch(() => {});
+        });
+        listEl.appendChild(item);
+      });
+
+      if (methods.length > 0) {
+        selectedMethod = methods[0].label;
+        updateConfirmButton(selectedMethod);
+      }
+    }
+
+    function updateConfirmButton(methodName) {
+      const btn = document.getElementById('btn-confirm-pay');
+      btn.disabled = false;
+      btn.innerHTML = `<span>Confirm Payment with ${methodName}</span>`;
+    }
+
+    document.getElementById('btn-confirm-pay').addEventListener('click', async () => {
+      if (!selectedMethod) return;
+
+      document.getElementById('view-checkout').hidden = true;
+      document.getElementById('view-processing').hidden = false;
+      document.getElementById('disp-processing-sub').textContent = `Processing ${selectedMethod} for ${money(sessionData.amount)}...`;
+
+      const simulateFail = document.getElementById('demo-simulate-fail').checked;
+      const outcome = simulateFail ? 'failure' : 'success';
+
+      // Simulate a realistic 1.2s payment processing delay
+      setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/pay/${encodeURIComponent(sessionId)}/process`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_method: selectedMethod,
+              simulate_outcome: outcome
+            })
+          });
+
+          const result = await res.json();
+          document.getElementById('view-processing').hidden = true;
+
+          if (res.ok && result.status === 'success') {
+            showSuccessState(result.amount, result.payment_method, result.transaction_id);
+          } else {
+            showFailureState(result.message || "Payment couldn't be completed.");
+          }
+        } catch (e) {
+          document.getElementById('view-processing').hidden = true;
+          showFailureState("Network error processing payment. Please try again.");
+        }
+      }, 1200);
+    });
+
+    function showSuccessState(amount, method, ref) {
+      document.getElementById('view-checkout').hidden = true;
+      document.getElementById('view-processing').hidden = true;
+      document.getElementById('view-failed').hidden = true;
+      document.getElementById('view-success').hidden = false;
+
+      document.getElementById('recp-amount').textContent = money(amount);
+      document.getElementById('recp-method').textContent = method || 'UPI';
+      document.getElementById('recp-ref').textContent = ref || sessionData?.transaction_id || 'TXN_REC';
+    }
+
+    function showFailureState(reason) {
+      document.getElementById('view-checkout').hidden = true;
+      document.getElementById('view-processing').hidden = true;
+      document.getElementById('view-success').hidden = true;
+      document.getElementById('view-failed').hidden = false;
+
+      document.getElementById('disp-failed-reason').textContent = reason || "Payment couldn't be completed.";
+    }
+
+    document.getElementById('btn-retry-flow').addEventListener('click', () => {
+      document.getElementById('view-failed').hidden = true;
+      loadPaymentDetails();
+    });
+
+    // Initialize
+    loadPaymentDetails();
+  </script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+import type { MediaAttributes, MediaDescription, SessionDescription } from 'sdp-transform';
+import type TypedEmitter from 'typed-emitter';
+import type { LoggerOptions } from './types';
+/** @internal */
+interface TrackBitrateInfo {
+    cid?: string;
+    transceiver?: RTCRtpTransceiver;
+    codec: string;
+    maxbr: number;
+    isScreenShare?: boolean;
+}
+/**
+ * Applies the configured start bitrate when this media section belongs to `cid`.
+ * This SDP munging is used for a bitrate setting that cannot be applied through
+ * `RTCRtpEncodingParameters`.
+ *
+ * Returns `undefined` when the section does not belong to the track, `0` when
+ * it does but does not offer the requested codec, and the codec payload when the
+ * requested codec is present (whether the bitrate was added or already set).
+ *
+ * @internal
+ */
+export declare function applyVideoStartBitrate(media: MediaDescription, cid: string, codec: string, maxbr: number, isScreenShare?: boolean): number | undefined;
+export declare const PCEvents: {
+    readonly NegotiationStarted: "negotiationStarted";
+    readonly NegotiationComplete: "negotiationComplete";
+    readonly OfferAnswered: "offerAnswered";
+    readonly RTPVideoPayloadTypes: "rtpVideoPayloadTypes";
+};
+declare const PCTransport_base: new () => TypedEmitter<PCTransportEventCallbacks>;
+/** @internal */
+export default class PCTransport extends PCTransport_base {
+    private _pc;
+    private get pc();
+    private config?;
+    private log;
+    private iceLog;
+    private loggerOptions;
+    private ddExtID;
+    latestOfferId: number;
+    latestAcknowledgedOfferId: number;
+    private offerLock;
+    private pendingInitialOffer?;
+    pendingCandidates: RTCIceCandidateInit[];
+    restartingIce: boolean;
+    renegotiate: boolean;
+    trackBitrates: TrackBitrateInfo[];
+    remoteStereoMids: string[];
+    remoteNackMids: string[];
+    onOffer?: (offer: RTCSessionDescriptionInit, offerId: number) => void;
+    onIceCandidate?: (candidate: RTCIceCandidate) => void;
+    onIceCandidateError?: (ev: Event) => void;
+    onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
+    onIceConnectionStateChange?: (state: RTCIceConnectionState) => void;
+    onSignalingStatechange?: (state: RTCSignalingState) => void;
+    onDataChannel?: (ev: RTCDataChannelEvent) => void;
+    onTrack?: (ev: RTCTrackEvent) => void;
+    constructor(config?: RTCConfiguration, loggerOptions?: LoggerOptions);
+    private createPC;
+    private get logContext();
+    get isICEConnected(): boolean;
+    addIceCandidate(candidate: RTCIceCandidateInit): Promise<void>;
+    setRemoteDescription(sd: RTCSessionDescriptionInit, offerId: number): Promise<boolean>;
+    negotiate: import("./debounce").DebouncedFunction<any[], (onError?: (e: Error) => void) => Promise<void>>;
+    createInitialOffer(): Promise<{
+        offer: RTCSessionDescriptionInit;
+        offerId: number;
+    } | undefined>;
+    createAndSendOffer(options?: RTCOfferOptions): Promise<void>;
+    createAndSetAnswer(): Promise<RTCSessionDescriptionInit>;
+    /**
+     * Returns the mids of transceivers that carry no outgoing track on this
+     * (publisher) connection: the pre-populated placeholders added by
+     * `RTCEngine.applyInitialPublisherLayout`, plus any transceiver that was used
+     * for a track and reverted on unpublish. Their codec fmtp is conformed to the
+     * published tracks so a shared payload type stays consistent across the bundle.
+     */
+    private getPlaceholderMids;
+    createDataChannel(label: string, dataChannelDict: RTCDataChannelInit): RTCDataChannel;
+    addTransceiver(mediaStreamTrack: MediaStreamTrack, transceiverInit: RTCRtpTransceiverInit): RTCRtpTransceiver;
+    addTransceiverOfKind(kind: 'audio' | 'video', transceiverInit: RTCRtpTransceiverInit): RTCRtpTransceiver;
+    addTrack(track: MediaStreamTrack): RTCRtpSender;
+    setTrackCodecBitrate(info: TrackBitrateInfo): void;
+    setConfiguration(rtcConfig: RTCConfiguration): void;
+    canRemoveTrack(): boolean;
+    removeTrack(sender: RTCRtpSender): void | undefined;
+    getConnectionState(): RTCPeerConnectionState;
+    getICEConnectionState(): RTCIceConnectionState;
+    getSignallingState(): RTCSignalingState;
+    getTransceivers(): RTCRtpTransceiver[];
+    getSenders(): RTCRtpSender[];
+    getLocalDescription(): RTCSessionDescription | null | undefined;
+    getRemoteDescription(): RTCSessionDescription | null;
+    /** stats of the underlying connection, `undefined` when there is none */
+    getStats(): Promise<RTCStatsReport> | undefined;
+    getMaxMessageSize(): number | undefined;
+    getConnectedAddress(): Promise<string | undefined>;
+    close: () => void;
+    private setMungedSDP;
+}
+/**
+ * Adds the AV1 dependency descriptor extension to `media` unless it is already there, and
+ * returns the id it is mapped to so callers can pass it back in as `ddExtID` (0 when no id has
+ * been chosen yet).
+ *
+ * A bundle has to map one URI to one id, so an id already in use for the extension anywhere in
+ * `sdp` wins over both the cached one and a fresh one: Chrome advertises the extension itself on
+ * sections it can send on, and an earlier offer may have munged it into others.
+ * @internal
+ */
+export declare function ensureVideoDDExtension(media: {
+    type: string;
+    port: number;
+    protocol: string;
+    payloads?: string | undefined;
+} & MediaDescription, sdp: SessionDescription, ddExtID: number): number;
+/**
+ * Checks whether an fmtp config declares `param` as an exact, `;`-delimited
+ * token. A plain substring check conflates distinct opus parameters — e.g.
+ * `stereo=1` is a substring of `sprop-stereo=1` — so `param` must match a whole
+ * parameter, not appear anywhere within the config string.
+ * @internal
+ */
+export declare function fmtpConfigHasParam(config: string, param: string): boolean;
+/** @internal */
+export declare function ensureAudioNackAndStereo(media: {
+    type: string;
+    port: number;
+    protocol: string;
+    payloads?: string | undefined;
+} & MediaDescription, stereoMids: string[], nackMids: string[]): void;
+/**
+ * Returns the mids of transceivers that carry no outgoing track: the
+ * pre-populated placeholders added by `RTCEngine.applyInitialPublisherLayout`,
+ * plus any transceiver that was used for a track and reverted on unpublish. The
+ * `sender.track` check is the reliable signal — an unpublished section keeps its
+ * `a=msid` (and its stale send-derived fmtp), so it can't be told apart from a
+ * real send by SDP alone. Transceiver mids are stable across renegotiations, so
+ * this works for every offer/answer after the first.
+ * @internal
+ */
+export declare function placeholderMidsFromTransceivers(transceivers: readonly RTCRtpTransceiver[]): Set<string>;
+/**
+ * Within a BUNDLE group a payload type must map to identical codec parameters
+ * across every m-line. When the same payload type carries different fmtp between
+ * sections — e.g. opus `usedtx=1` on the published microphone but not on the
+ * pre-populated recvonly placeholders, or H.265 with different `level-id` between
+ * a published video track and a placeholder — libwebrtc flags a "bundled payload
+ * type collision".
+ *
+ * Rewrite the placeholder sections so every shared payload type carries the
+ * same fmtp. Real (non-placeholder) sections always win the canonical value, so
+ * a published track's encoder parameters are never altered. When no real
+ * section declares a payload type — e.g. a placeholder that was reused for a
+ * track and then reverted to recvonly keeps its send-derived `level-id` while
+ * fresh placeholders use the default — the placeholders still converge on the
+ * first value seen, so two placeholders can't disagree either. Only placeholder
+ * sections are ever rewritten, and it is codec-agnostic (opus, H.265, ...).
+ * `isPlaceholder` identifies the sections to conform.
+ * @internal
+ */
+export declare function conformBundledCodecFmtp(media: MediaDescription[], isPlaceholder: (media: MediaDescription) => boolean): void;
+/** @internal */
+export declare function extractStereoAndNackAudioFromOffer(offer: RTCSessionDescriptionInit): {
+    stereoMids: string[];
+    nackMids: string[];
+};
+type PCTransportEventCallbacks = {
+    negotiationStarted: () => void;
+    negotiationComplete: () => void;
+    offerAnswered: (offerId: number) => void;
+    rtpVideoPayloadTypes: (attributes: MediaAttributes['rtp']) => void;
+};
+export {};
+//# sourceMappingURL=PCTransport.d.ts.map

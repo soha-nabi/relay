@@ -1,0 +1,13 @@
+import { FormEvent, useState } from 'react';
+import { motion } from 'framer-motion';
+import { Search } from 'lucide-react';
+import { getCustomer } from '../lib/api';
+import type { CustomerProfile } from '../types';
+
+export function CustomerIntelligence({ onProfile }: { onProfile: (profile: CustomerProfile) => void }) {
+  const [customerId, setCustomerId] = useState(''); const [profile, setProfile] = useState<CustomerProfile>(); const [error, setError] = useState(''); const [loading, setLoading] = useState(false);
+  async function submit(event: FormEvent) { event.preventDefault(); if (!customerId.trim()) return; setLoading(true); setError(''); try { const data = await getCustomer(customerId.trim()); setProfile(data); onProfile(data); } catch { setProfile(undefined); setError('Customer not found. Check the ID and try again.'); } finally { setLoading(false); } }
+  const riskClass = !profile ? 'green' : profile.risk_score > 70 ? 'red' : profile.risk_score > 40 ? 'orange' : 'green';
+  return <section className="section" id="customer"><div className="section-intro"><p className="eyebrow">CUSTOMER INTELLIGENCE</p><h2>See the story behind every payment.</h2><p>Analyze payment behavior and prioritize recovery with confidence.</p></div><article className="panel customer-card"><form onSubmit={submit} className="search-form"><label>Customer ID<input value={customerId} onChange={(event) => setCustomerId(event.target.value)} placeholder="CUST000052" /></label><button className="button" disabled={loading}><Search size={17} />{loading ? 'Analyzing…' : 'Analyze customer'}</button></form>{error && <p className="error">{error}</p>}{profile && <motion.div className="profile" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}><div className="risk-wrap"><svg viewBox="0 0 120 120" className={`risk-ring ${riskClass}`}><circle cx="60" cy="60" r="49" /><circle className="risk-progress" cx="60" cy="60" r="49" style={{ strokeDashoffset: 308 - 308 * profile.risk_score / 100 }} /></svg><div><b>{profile.risk_score}</b><span>Risk score</span></div></div><div className="profile-detail"><h3>{profile.customer_id}</h3><div className="profile-grid"><Metric label="Transactions" value={profile.total_transactions} /><Metric label="Average amount" value={`₹${profile.average_amount.toLocaleString('en-IN')}`} /><Metric label="Preferred method" value={profile.preferred_payment_method || '—'} /><Metric label="Failures" value={profile.failure_count} /><Metric label="Recovery rate" value={`${profile.recovery_rate.toFixed(1)}%`} /></div></div></motion.div>}</article></section>;
+}
+function Metric({ label, value }: { label: string; value: string | number }) { return <div><small>{label}</small><b>{value}</b></div>; }
