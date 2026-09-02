@@ -101,24 +101,26 @@ function MainAppShell() {
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#0f172a' }}>
       {/* ── Role Topbar ─────────────────────────────────────────────────── */}
-      <header style={{ position: 'sticky', top: 0, zIndex: 40, background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', height: '70px', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{ position: 'sticky', top: 0, zIndex: 40, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }} className="sm:px-6">
+          <div style={{ display: 'flex', minHeight: '64px', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', padding: '8px 0' }}>
             {/* Brand + Active Role */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '-0.04em', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#0f172a', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="sm:gap-4">
+              <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.04em', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '26px', height: '26px', borderRadius: '8px', background: '#0f172a', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 800 }}>
                   R
                 </span>
                 relay
               </div>
-              {getRoleBadge()}
+              <div className="scale-90 sm:scale-100 origin-left">
+                {getRoleBadge()}
+              </div>
             </div>
 
             {/* Actions: CSV upload (Merchant/Admin only) & User Profile */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="sm:gap-4">
               {uploadStatus && (
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#16a34a', background: '#dcfce7', padding: '4px 10px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#16a34a', background: '#dcfce7', padding: '3px 8px', borderRadius: '8px', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {uploadStatus}
                 </span>
               )}
@@ -130,31 +132,31 @@ function MainAppShell() {
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '4px',
                     background: 'white',
                     border: '1px solid #cbd5e1',
-                    borderRadius: '10px',
-                    padding: '7px 14px',
-                    fontSize: '13px',
+                    borderRadius: '8px',
+                    padding: '6px 10px',
+                    fontSize: '12px',
                     fontWeight: 600,
                     color: '#334155',
                     cursor: 'pointer',
                   }}
                 >
-                  <Upload size={14} /> Upload Data
+                  <Upload size={13} /> <span className="hidden xs:inline sm:inline">Upload</span>
                   <input className="hidden" type="file" accept=".csv" onChange={onUpload} style={{ display: 'none' }} />
                 </label>
               )}
 
               {/* Profile & Sign Out */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderLeft: '1px solid #e2e8f0', paddingLeft: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid #e2e8f0', paddingLeft: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: '#475569', flexShrink: 0 }}>
                     {user.name?.[0] || 'U'}
                   </div>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', lineHeight: 1 }}>{user.name || user.username}</div>
-                    <div style={{ fontSize: '10px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' }}>{user.role}</div>
+                  <div className="hidden sm:block">
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', lineHeight: 1.1, maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name || user.username}</div>
+                    <div style={{ fontSize: '9px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' }}>{user.role}</div>
                   </div>
                 </div>
 
@@ -162,11 +164,11 @@ function MainAppShell() {
                   id="btn-signout"
                   onClick={logout}
                   title="Sign out"
-                  style={{ background: 'transparent', border: 'none', padding: '6px', borderRadius: '8px', cursor: 'pointer', color: '#94a3b8' }}
+                  style={{ background: 'transparent', border: 'none', padding: '5px', borderRadius: '6px', cursor: 'pointer', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = '#ef4444')}
                   onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
                 >
-                  <LogOut size={16} />
+                  <LogOut size={15} />
                 </button>
               </div>
             </div>
@@ -176,16 +178,16 @@ function MainAppShell() {
 
       {/* Forbidden 403 Alert */}
       {forbiddenError && (
-        <div style={{ maxWidth: '1400px', margin: '16px auto 0', padding: '0 24px' }}>
-          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '12px 16px', color: '#b91c1c', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertCircle size={16} />
+        <div style={{ maxWidth: '1400px', margin: '12px auto 0', padding: '0 16px' }} className="sm:px-6">
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '10px 14px', color: '#b91c1c', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={15} style={{ flexShrink: 0 }} />
             <span>{forbiddenError}</span>
           </div>
         </div>
       )}
 
       {/* ── Main Role Shell ─────────────────────────────────────────────── */}
-      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '36px 24px' }}>
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '16px 12px 96px' }} className="sm:p-6 md:p-8">
         {role === 'admin' && <AdminShell />}
         {role === 'merchant' && <MerchantShell dashboard={d} onRefreshData={loadData} />}
         {role === 'user' && <UserShell />}
@@ -202,7 +204,7 @@ function MainAppShell() {
       />
 
       <style>{`
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg) } }
       `}</style>
     </div>
   );

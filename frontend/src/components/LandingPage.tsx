@@ -90,7 +90,7 @@ export function LandingPage() {
 
       {/* SECTION 2: KPI row */}
       <section className="section">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="glass-card card-pad flex items-start gap-4 p-6 bg-white">
             <div className="icon-bg-blue rounded-xl p-3 bg-blue-50 text-blue-600">
               <TrendingUp size={24} />
@@ -136,7 +136,7 @@ export function LandingPage() {
 
       {/* SECTION 3: Three-column grid */}
       <section className="section">
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* AI Executive Brief */}
           <div className="glass-card card-pad bg-white p-6">

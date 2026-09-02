@@ -6,8 +6,9 @@ import secrets
 from typing import Any, Callable
 import uuid
 
-from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Response, status
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Response, status, BackgroundTasks
 from pydantic import BaseModel, Field
+from backend.email_service import send_welcome_email_task
 
 from backend.db import (
     auth_session_repository,
@@ -256,7 +257,7 @@ async def login(request: LoginRequest, response: Response) -> dict[str, Any]:
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
-async def signup(request: SignupRequest, response: Response) -> dict[str, Any]:
+async def signup(request: SignupRequest, response: Response, background_tasks: BackgroundTasks) -> dict[str, Any]:
     """Register a new user account and establish a persistent MongoDB session."""
     clean_username = request.username.strip()
     clean_email = request.email.strip().lower() if request.email else None
@@ -373,6 +374,13 @@ async def signup(request: SignupRequest, response: Response) -> dict[str, Any]:
         path="/",
     )
 
+    if clean_email:
+        background_tasks.add_task(
+            send_welcome_email_task,
+            clean_email,
+            clean_name,
+            assigned_role,
+        )
     return {
         "status": "success",
         "message": f"Account created successfully for {user_info['name']}",

@@ -100,7 +100,7 @@ function RelayVoiceAgentInner({
       style={{
         background: 'white',
         borderRadius: '24px',
-        padding: '24px',
+        padding: '20px',
         border: '1px solid #e2e8f0',
         boxShadow:
           variant === 'floating'
@@ -108,11 +108,13 @@ function RelayVoiceAgentInner({
             : '0 4px 20px rgba(15,23,42,0.06)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '18px',
-        minWidth: '320px',
+        gap: '16px',
+        minWidth: 0,
+        width: '100%',
         maxWidth: variant === 'floating' ? '400px' : '100%',
         position: 'relative',
       }}
+      className="p-4 sm:p-6"
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -431,72 +433,89 @@ export default function RelayVoiceAgent({
 
   if (variant === 'floating') {
     return (
-      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999 }}>
+      <div className="floating-agent-container">
         {isOpen ? (
-          <div style={{ position: 'relative' }}>
-            <button
+          <>
+            {/* Mobile Backdrop */}
+            <div
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9998] sm:hidden bottom-sheet-backdrop"
               onClick={() => setIsOpen(false)}
+            />
+
+            {/* Mobile Bottom Sheet (<640px) / Desktop Floating Card (>=640px) */}
+            <div className="fixed inset-x-0 bottom-0 z-[9999] sm:inset-auto sm:bottom-6 sm:right-6 sm:max-w-[420px] w-full bottom-sheet-content">
+              <div className="bg-white rounded-t-[28px] sm:rounded-3xl border border-slate-200 shadow-2xl overflow-hidden max-h-[88vh] sm:max-h-[85vh] flex flex-col">
+                {/* Mobile Pull Handle Bar */}
+                <div className="pt-2.5 pb-1 flex justify-center sm:hidden">
+                  <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
+                </div>
+
+                {/* Close Button Header */}
+                <div className="px-4 sm:px-6 pt-2 pb-0 flex items-center justify-between">
+                  <div className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+                    AI Voice Copilot
+                  </div>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+                    aria-label="Close Voice Agent"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Scrollable Agent Body */}
+                <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(85vh-60px)]">
+                  {inner}
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999]">
+            <button
+              onClick={() => setIsOpen(true)}
+              id="btn-floating-voice-agent"
               style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                background: '#f1f5f9',
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%)',
+                color: 'white',
                 border: 'none',
-                borderRadius: '50%',
-                width: '28px',
-                height: '28px',
+                borderRadius: '999px',
+                padding: '12px 18px',
+                minHeight: '48px',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: '#64748b',
-                zIndex: 1,
+                gap: '8px',
+                boxShadow: '0 12px 30px -5px rgba(15,23,42,0.35)',
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }}
+              aria-label="Open Relay Voice Agent"
             >
-              <X size={14} />
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Mic size={18} style={{ color: '#93c5fd' }} />
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-3px',
+                    right: '-3px',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: '#22c55e',
+                    border: '2px solid #0f172a',
+                  }}
+                />
+              </div>
+              <span className="hidden xs:inline sm:inline">Talk to Voice Agent</span>
+              <span className="inline xs:hidden sm:hidden">AI Voice</span>
+              <Sparkles size={14} style={{ color: '#fbbf24' }} />
             </button>
-            {inner}
           </div>
-        ) : (
-          <button
-            onClick={() => setIsOpen(true)}
-            id="btn-floating-voice-agent"
-            style={{
-              background: 'linear-gradient(135deg, #0f172a 0%, #2563eb 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '999px',
-              padding: '14px 20px',
-              fontSize: '14px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              boxShadow: '0 10px 25px -5px rgba(37,99,235,0.4)',
-              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }}
-          >
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Mic size={18} style={{ color: 'white' }} />
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#22c55e',
-                  border: '2px solid white',
-                }}
-              />
-            </div>
-            <span>Talk to AI Recovery Agent</span>
-            <Sparkles size={14} style={{ color: '#fbbf24' }} />
-          </button>
         )}
       </div>
     );

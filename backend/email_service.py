@@ -3,6 +3,8 @@ from html import escape
 from typing import Any
 import resend
 from dotenv import load_dotenv
+from backend.email_log_repository import EmailLogRepository
+
 
 load_dotenv()
 
@@ -33,6 +35,64 @@ def send_email(to: str, subject: str, html: str) -> dict[str, Any]:
         "status": "sent",
         "message_id": result.get("id") if isinstance(result, dict) else getattr(result, "id", None),
     }
+
+
+def send_welcome_email(to: str, name: str, role: str) -> dict[str, Any]:
+    """Send role‑specific welcome email and log the activity.
+    Returns a dict with status and optional error.
+    """
+    # Prepare subject and body based on role
+    if role == "merchant":
+        subject = "Welcome to Relay Merchant Portal"
+        body = f"""
+        <h2>Welcome Merchant</h2>
+        <p>Hello {escape(name)},</p>
+        <p>Your merchant account is now active.</p>
+        <p>You can begin managing recovery campaigns immediately.</p>
+        <p>Thank you for joining Relay.</p>
+        <p>— Relay Team</p>
+        """
+    else:
+        subject = "Welcome to Relay"
+        body = f"""
+        <h2>Welcome to Relay</h2>
+        <p>Hello {escape(name)},</p>
+        <p>Your account has been created successfully.</p>
+        <p>Account Type: {escape(role)}</p>
+        <p>You can now access the Relay platform.</p>
+        <p>Thank you for joining Relay.</p>
+        <p>— Relay Team</p>
+        """
+    # Send email
+    try:
+        result = send_email(to=to, subject=subject, html=body)
+        status = "sent"
+        error = None
+    except Exception as e:
+        result = {}
+        status = "failed"
+        error = str(e)
+
+    # Log to MongoDB
+    repo = EmailLogRepository()
+    log_entry = {
+        "email": to,
+        "subject": subject,
+        "type": "welcome_email",
+        "status": status,
+        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+    }
+    if error:
+        log_entry["error"] = error
+    repo.create_log(log_entry)
+
+    return {"status": status, "error": error, **result}
+
+
+def send_welcome_email_task(email: str, name: str, role: str) -> None:
+    """Background task wrapper for sending welcome email."""
+    send_welcome_email(to=email, name=name, role=role)
+
 
 
 def send_payment_recovery_email(

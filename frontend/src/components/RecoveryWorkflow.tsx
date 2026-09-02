@@ -126,20 +126,20 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
   };
 
   return (
-    <div style={{ background: 'white', borderRadius: '24px', padding: '36px', border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(15,23,42,0.04)' }}>
+    <div style={{ background: 'white', borderRadius: '24px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 24px rgba(15,23,42,0.04)' }} className="sm:p-8">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px' }}>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 6px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>
             Closed-Loop Recovery Engine
           </p>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
+          <h2 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 800, color: '#0f172a', letterSpacing: '-0.02em', margin: 0 }}>
             Interactive Recovery Workflow
           </h2>
         </div>
 
         {/* Step Indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 max-w-full">
           {[
             { num: 1, label: 'Customer' },
             { num: 2, label: 'Diagnose' },
@@ -151,19 +151,20 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 10px',
+                  gap: '4px',
+                  padding: '4px 8px',
                   borderRadius: '999px',
                   background: step >= s.num ? '#0f172a' : '#f1f5f9',
                   color: step >= s.num ? 'white' : '#94a3b8',
-                  fontSize: '12px',
+                  fontSize: '11px',
                   fontWeight: 600,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 <span>{s.num}.</span>
                 <span>{s.label}</span>
               </div>
-              {s.num < 4 && <span style={{ color: '#cbd5e1', fontSize: '12px' }}>→</span>}
+              {s.num < 4 && <span style={{ color: '#cbd5e1', fontSize: '11px' }}>→</span>}
             </React.Fragment>
           ))}
         </div>
@@ -187,7 +188,7 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
               e.preventDefault();
               handleSearchCustomer();
             }}
-            style={{ display: 'flex', gap: '12px', maxWidth: '480px' }}
+            className="flex flex-col sm:flex-row gap-3 max-w-lg"
           >
             <div style={{ position: 'relative', flex: 1 }}>
               <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
@@ -197,21 +198,21 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
                 onChange={(e) => setCustomerId(e.target.value)}
                 placeholder="CUST000052"
                 required
-                style={{ width: '100%', padding: '12px 14px 12px 38px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '10px 14px 10px 38px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              style={{ background: '#0f172a', color: 'white', border: 'none', borderRadius: '12px', padding: '0 20px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+              style={{ background: '#0f172a', color: 'white', border: 'none', borderRadius: '12px', padding: '10px 20px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               {loading ? 'Searching…' : 'Diagnose'}
             </button>
           </form>
 
           {/* Quick preset buttons */}
-          <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '12px', color: '#94a3b8' }}>Quick test:</span>
+          <div className="flex items-center gap-2 flex-wrap mt-5">
+            <span style={{ fontSize: '11px', color: '#94a3b8' }}>Quick test:</span>
             {[
               { id: 'CUST000052', label: 'CUST000052 (High Value)' },
               { id: 'CUST001467', label: 'CUST001467 (Healthy)' },
@@ -233,24 +234,24 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
       {/* ── STEP 2: Diagnosis ────────────────────────────────────────────── */}
       {step === 2 && profile && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
               <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Customer ID</div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginTop: '4px' }}>{profile.customer_id}</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginTop: '2px', wordBreak: 'break-all' }}>{profile.customer_id}</div>
             </div>
-            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
-              <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Payment Failures</div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: profile.failure_count > 0 ? '#ef4444' : '#10b981', marginTop: '4px' }}>
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
+              <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Failures</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: profile.failure_count > 0 ? '#ef4444' : '#10b981', marginTop: '2px' }}>
                 {profile.failure_count}
               </div>
             </div>
-            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
               <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Recovery Rate</div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: '#2563eb', marginTop: '4px' }}>{profile.recovery_rate}%</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#2563eb', marginTop: '2px' }}>{profile.recovery_rate}%</div>
             </div>
-            <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '14px', border: '1px solid #f1f5f9' }}>
               <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Risk Score</div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: profile.risk_score > 60 ? '#ef4444' : '#10b981', marginTop: '4px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: profile.risk_score > 60 ? '#ef4444' : '#10b981', marginTop: '2px' }}>
                 {profile.risk_score}/100
               </div>
             </div>
@@ -258,19 +259,19 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
 
           {/* Failure reason if available */}
           {profile.last_failure_reason && (
-            <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '14px 18px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <AlertTriangle size={18} style={{ color: '#d97706' }} />
+            <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '12px', padding: '12px 16px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <AlertTriangle size={18} style={{ color: '#d97706', flexShrink: 0 }} />
               <div>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#92400e' }}>Last failure reason: </span>
-                <span style={{ fontSize: '13px', color: '#78350f' }}>{profile.last_failure_reason} ({money(profile.last_failed_amount || 0)})</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#92400e' }}>Last failure reason: </span>
+                <span style={{ fontSize: '12px', color: '#78350f' }}>{profile.last_failure_reason} ({money(profile.last_failed_amount || 0)})</span>
               </div>
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setStep(1)}
-              style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, color: '#64748b', cursor: 'pointer' }}
+              style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, color: '#64748b', cursor: 'pointer' }}
             >
               Back
             </button>
@@ -279,9 +280,9 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
                 setStep(3);
                 handleSimulate(selectedStrategy);
               }}
-              style={{ background: '#0f172a', border: 'none', borderRadius: '10px', padding: '10px 22px', fontSize: '13px', fontWeight: 600, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ background: '#0f172a', border: 'none', borderRadius: '10px', padding: '9px 20px', fontSize: '13px', fontWeight: 600, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              Configure Recovery Strategy <ArrowRight size={14} />
+              Configure Strategy <ArrowRight size={14} />
             </button>
           </div>
         </div>
@@ -290,9 +291,9 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
       {/* ── STEP 3: Decide Strategy ──────────────────────────────────────── */}
       {step === 3 && profile && (
         <div>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: '0 0 14px' }}>Select Recovery Strategy</h3>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 12px' }}>Select Recovery Strategy</h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
             {[
               { id: 'Smart Retry', label: 'Smart Retry', desc: 'AI-scheduled retry based on historical success curves' },
               { id: 'Custom Schedule', label: 'Custom Schedule', desc: 'Define precise retry intervals (0h, 24h, 72h)' },
@@ -305,47 +306,47 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
                   border: `2px solid ${selectedStrategy === strat.id ? '#2563eb' : '#e2e8f0'}`,
                   background: selectedStrategy === strat.id ? 'rgba(37,99,235,0.03)' : 'white',
                   borderRadius: '16px',
-                  padding: '18px',
+                  padding: '16px',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>{strat.label}</span>
-                  {selectedStrategy === strat.id && <CheckCircle2 size={16} style={{ color: '#2563eb' }} />}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{strat.label}</span>
+                  {selectedStrategy === strat.id && <CheckCircle2 size={16} style={{ color: '#2563eb', flexShrink: 0 }} />}
                 </div>
-                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>{strat.desc}</p>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.45 }}>{strat.desc}</p>
               </div>
             ))}
           </div>
 
           {/* Simulation Output */}
           {simulation && (
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '18px', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '16px', marginBottom: '20px' }}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Simulation Result</span>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: '#0f172a', marginTop: '2px' }}>{simulation.summary}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', marginTop: '2px' }}>{simulation.summary}</div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div className="sm:text-right">
                   <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>Expected Recovered</span>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: '#10b981' }}>{money(simulation.expected_recovered_revenue)}</div>
+                  <div style={{ fontSize: '18px', fontWeight: 800, color: '#10b981' }}>{money(simulation.expected_recovered_revenue)}</div>
                 </div>
               </div>
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               onClick={() => setStep(2)}
-              style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, color: '#64748b', cursor: 'pointer' }}
+              style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, color: '#64748b', cursor: 'pointer' }}
             >
               Back
             </button>
             <button
               onClick={handleStartRecovery}
               disabled={loading}
-              style={{ background: '#2563eb', border: 'none', borderRadius: '10px', padding: '10px 24px', fontSize: '13px', fontWeight: 600, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ background: '#2563eb', border: 'none', borderRadius: '10px', padding: '9px 20px', fontSize: '13px', fontWeight: 600, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               {loading ? 'Starting…' : 'Start Recovery Workflow'} <ArrowRight size={14} />
             </button>
@@ -356,18 +357,18 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
       {/* ── STEP 4: Execution & In-Progress Session ───────────────────────── */}
       {step === 4 && session && (
         <div>
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '16px', padding: '18px', marginBottom: '20px' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <CheckCircle2 size={18} style={{ color: '#16a34a' }} />
-                <span style={{ fontSize: '15px', fontWeight: 700, color: '#166534' }}>Recovery Session Initialized</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#166534' }}>Recovery Session Initialized</span>
               </div>
-              <span style={{ fontSize: '12px', fontWeight: 600, background: '#dcfce7', color: '#15803d', padding: '3px 10px', borderRadius: '999px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, background: '#dcfce7', color: '#15803d', padding: '2px 8px', borderRadius: '999px', alignSelf: 'flex-start' }} className="sm:self-auto">
                 Status: {session.status}
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <span style={{ fontSize: '11px', color: '#15803d' }}>Session ID</span>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#166534' }}>{session.session_id.slice(0, 16)}…</div>
@@ -384,18 +385,18 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <div className="flex gap-2.5 flex-wrap">
             <button
               onClick={handleRetryAction}
               disabled={loading || session.status === 'recovered'}
-              style={{ background: '#0f172a', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ background: '#0f172a', color: 'white', border: 'none', borderRadius: '10px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              <RefreshCw size={14} /> Execute Retry Now
+              <RefreshCw size={13} /> Execute Retry Now
             </button>
 
             <button
               onClick={() => onOpenCustomerPayment?.(session.session_id)}
-              style={{ background: '#2563eb', color: 'white', border: 'none', borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+              style={{ background: '#2563eb', color: 'white', border: 'none', borderRadius: '10px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               Open Customer Payment View
             </button>
@@ -403,7 +404,7 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
             <button
               onClick={handleCompleteSession}
               disabled={loading || session.status === 'recovered'}
-              style={{ background: 'white', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, color: '#334155', cursor: 'pointer' }}
+              style={{ background: 'white', border: '1px solid #cbd5e1', borderRadius: '10px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, color: '#334155', cursor: 'pointer' }}
             >
               Mark Recovered
             </button>
@@ -414,7 +415,7 @@ export default function RecoveryWorkflow({ onSessionCreated, onOpenCustomerPayme
                 setSession(null);
                 setProfile(null);
               }}
-              style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '10px 18px', fontSize: '13px', fontWeight: 600, color: '#64748b', cursor: 'pointer' }}
+              style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '9px 16px', fontSize: '13px', fontWeight: 600, color: '#64748b', cursor: 'pointer' }}
             >
               New Recovery
             </button>

@@ -132,6 +132,17 @@ app.include_router(auth_router)
 app.include_router(agent_router)
 
 
+@app.on_event("startup")
+async def _log_registered_routes() -> None:
+    """Print all registered routes at startup for diagnostics."""
+    print("\n=== Registered FastAPI routes ===")
+    for route in app.routes:
+        methods = getattr(route, "methods", None)
+        method_str = ",".join(sorted(methods)) if methods else "—"
+        print(f"  {method_str:10s} {route.path}")
+    print("================================\n")
+
+
 @dataclass
 class Dataset:
     dataframe: pd.DataFrame
@@ -376,6 +387,26 @@ async def health_check_db() -> dict:
     if "error_category" in result:
         resp["error_category"] = result["error_category"]
     return resp
+
+
+@app.get("/debug/test-email", tags=["debug"])
+async def debug_test_email() -> dict:
+    """Send a test welcome email via Resend and log the result to MongoDB."""
+    import logging
+    from backend.email_service import send_welcome_email
+
+    logger = logging.getLogger(__name__)
+    try:
+        result = send_welcome_email(
+            to="relaysupport.ai@gmail.com",
+            name="Soha",
+            role="user",
+        )
+        logger.info("debug_test_email result: %s", result)
+        return result
+    except Exception as exc:
+        logger.exception("debug_test_email raised: %s", exc)
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 # ============================================================================

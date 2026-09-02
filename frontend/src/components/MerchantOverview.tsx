@@ -364,89 +364,50 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
+        className="flex items-center justify-center py-6 sm:py-10 lg:py-14 animate-fadeInUp"
         style={{
-          minHeight: '88vh',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '80px 0 60px',
-          transition: 'opacity 0.7s ease, transform 0.7s ease',
+          minHeight: 'auto',
           opacity: heroVisible ? 1 : 0,
-          transform: heroVisible ? 'translateY(0)' : 'translateY(24px)',
+          transform: heroVisible ? 'translateY(0)' : 'translateY(16px)',
+          transition: 'opacity 0.6s ease, transform 0.6s ease',
         }}
       >
         <div style={{ width: '100%' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
 
             {/* Left: Copy */}
             <div>
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.18)',
-                borderRadius: '999px', padding: '5px 12px',
-                fontSize: '12px', fontWeight: 600, color: '#2563eb',
-                marginBottom: '24px', letterSpacing: '0.02em',
-              }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-                Recovery engine active
+              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200/60 rounded-full px-3 py-1 text-xs font-semibold text-blue-600 mb-3 sm:mb-4">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Recovery engine active</span>
               </div>
 
-              <h1 style={{
-                fontSize: 'clamp(36px, 4.5vw, 64px)',
-                fontWeight: 800,
-                lineHeight: 1.05,
-                letterSpacing: '-0.03em',
-                color: '#0f172a',
-                margin: '0 0 20px',
-              }}>
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.12] mb-3 sm:mb-4">
                 Recover revenue<br />
-                <span style={{
-                  background: 'linear-gradient(135deg, #2563eb 0%, #6366f1 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
+                <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   before it disappears.
                 </span>
               </h1>
 
-              <p style={{
-                fontSize: '18px', lineHeight: 1.65, color: '#475569',
-                maxWidth: '480px', margin: '0 0 36px',
-              }}>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-lg mb-5 sm:mb-7">
                 Relay detects failed payments, chooses the right recovery action,
                 and closes the loop when the money comes back.
               </p>
 
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full sm:w-auto">
                 <button
                   id="hero-cta-recoveries"
                   onClick={() => nav('recovery')}
-                  style={{
-                    background: '#0f172a', color: 'white',
-                    border: 'none', borderRadius: '12px',
-                    padding: '13px 24px', fontSize: '14px', fontWeight: 600,
-                    cursor: 'pointer', letterSpacing: '-0.01em',
-                    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-                    boxShadow: '0 4px 14px rgba(15,23,42,0.18)',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget.style.transform = 'translateY(-1px)'); (e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,23,42,0.24)'); }}
-                  onMouseLeave={e => { (e.currentTarget.style.transform = ''); (e.currentTarget.style.boxShadow = '0 4px 14px rgba(15,23,42,0.18)'); }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-semibold shadow-md hover:bg-slate-800 transition-all active:scale-[0.98]"
+                  style={{ minHeight: '44px' }}
                 >
                   View recoveries
                 </button>
                 <button
                   id="hero-cta-automations"
                   onClick={() => nav('automations')}
-                  style={{
-                    background: 'white', color: '#0f172a',
-                    border: '1px solid #e2e8f0', borderRadius: '12px',
-                    padding: '13px 24px', fontSize: '14px', fontWeight: 600,
-                    cursor: 'pointer', letterSpacing: '-0.01em',
-                    transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-                    boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
-                  }}
-                  onMouseEnter={e => { (e.currentTarget.style.borderColor = '#bfdbfe'); (e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.08)'); }}
-                  onMouseLeave={e => { (e.currentTarget.style.borderColor = '#e2e8f0'); (e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,23,42,0.06)'); }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-xl bg-white text-slate-900 border border-slate-200 text-xs sm:text-sm font-semibold shadow-sm hover:border-blue-200 hover:bg-blue-50/50 transition-all active:scale-[0.98]"
+                  style={{ minHeight: '44px' }}
                 >
                   Explore automations
                 </button>
@@ -454,47 +415,29 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
             </div>
 
             {/* Right: Network Visual */}
-            <div style={{
-              display: 'flex', justifyContent: 'center',
-              background: 'rgba(248,250,252,0.7)',
-              border: '1px solid rgba(226,232,240,0.8)',
-              borderRadius: '24px',
-              padding: '12px',
-              boxShadow: '0 8px 32px rgba(15,23,42,0.06)',
-              overflow: 'hidden',
-            }}>
-              <NetworkCanvas width={500} height={360} />
+            <div className="flex justify-center bg-slate-50/80 border border-slate-200/80 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-sm overflow-hidden w-full max-h-[220px] sm:max-h-none">
+              <NetworkCanvas width={460} height={280} />
             </div>
           </div>
 
           {/* ── LIVE STATUS BAR ─────────────────────────────────────────── */}
-          <div style={{
-            marginTop: '56px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1px',
-            background: '#e2e8f0',
-            borderRadius: '18px',
-            overflow: 'hidden',
-            border: '1px solid #e2e8f0',
-          }}>
+          <div className="mt-6 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-px sm:bg-slate-200 rounded-2xl overflow-hidden sm:border sm:border-slate-200">
             {[
               { label: 'Revenue at Risk', value: money(atRisk), color: '#ef4444', note: 'Active failed payments' },
               { label: 'Recovered', value: money(recovered), color: '#10b981', note: 'Closed recovery sessions' },
               { label: 'Active Recoveries', value: fmt(activeRecoveries), color: '#2563eb', note: 'In-progress sessions' },
             ].map((m, i) => (
-              <div key={i} style={{
-                background: 'white',
-                padding: '28px 32px',
-                transition: 'background 0.2s',
-              }}>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 8px' }}>
+              <div
+                key={i}
+                className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none"
+              >
+                <p className="text-[11px] font-semibold text-slate-400 tracking-wider uppercase mb-1">
                   {m.label}
                 </p>
-                <p style={{ fontSize: '32px', fontWeight: 800, color: m.color, letterSpacing: '-0.03em', margin: '0 0 4px', lineHeight: 1.1 }}>
+                <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight mb-0.5 leading-tight" style={{ color: m.color }}>
                   {m.value}
                 </p>
-                <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>{m.note}</p>
+                <p className="text-[11px] text-slate-400 m-0">{m.note}</p>
               </div>
             ))}
           </div>
@@ -502,16 +445,16 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── LIVE ACTIVITY FEED ──────────────────────────────────────────────── */}
-      <section style={{ padding: '64px 0' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
+      <section className="py-8 sm:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           <div>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 12px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>
               Live status
             </p>
-            <h2 style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 16px', lineHeight: 1.1 }}>
+            <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 12px', lineHeight: 1.15 }}>
               Relay is working.
             </h2>
-            <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.6, maxWidth: '400px' }}>
+            <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, maxWidth: '400px', margin: 0 }}>
               Every event in the recovery lifecycle is tracked in real time.
               The feed below reflects your actual recovery sessions.
             </p>
@@ -521,8 +464,9 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
             background: 'white', border: '1px solid #f1f5f9',
             borderRadius: '20px', overflow: 'hidden',
             boxShadow: '0 4px 20px rgba(15,23,42,0.04)',
+            width: '100%',
           }}>
-            <div style={{ padding: '18px 20px', borderBottom: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 0 3px rgba(16,185,129,0.2)', animation: 'pulse 2s ease-in-out infinite' }} />
               <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>Recovery activity</span>
             </div>
@@ -530,7 +474,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
               {feed.map((item, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '14px 20px',
+                  padding: '12px 18px',
                   borderTop: i === 0 ? 'none' : '1px solid #f8fafc',
                   transition: 'background 0.15s',
                 }}>
@@ -551,56 +495,58 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── RECOVERY PIPELINE ───────────────────────────────────────────────── */}
-      <section style={{ padding: '64px 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <p style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 12px' }}>How it works</p>
-          <h2 style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 14px', lineHeight: 1.1 }}>
+      <section className="py-8 sm:py-16">
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>How it works</p>
+          <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 10px', lineHeight: 1.15 }}>
             The recovery pipeline.
           </h2>
-          <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '480px', margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '480px', margin: '0 auto', lineHeight: 1.6 }}>
             From the moment a payment fails to the moment it is recovered — Relay handles every step.
           </p>
         </div>
 
         {/* Steps */}
-        <div style={{ display: 'flex', alignItems: 'stretch', gap: '0', position: 'relative' }}>
-          {PIPELINE_STEPS.map((step, i) => (
-            <React.Fragment key={step.id}>
-              <button
-                id={`pipeline-step-${step.id}`}
-                onClick={() => setActiveStep(activeStep === step.id ? null : step.id)}
-                style={{
-                  flex: 1,
-                  background: activeStep === step.id ? step.bg : 'white',
-                  border: `1px solid ${activeStep === step.id ? step.color + '44' : '#f1f5f9'}`,
-                  borderRadius: i === 0 ? '16px 0 0 16px' : i === PIPELINE_STEPS.length - 1 ? '0 16px 16px 0' : '0',
-                  padding: '28px 20px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'background 0.2s ease, border-color 0.2s ease',
-                  outline: 'none',
-                  boxShadow: activeStep === step.id ? `0 4px 20px ${step.color}18` : '0 2px 8px rgba(15,23,42,0.04)',
-                }}
-                aria-pressed={activeStep === step.id}
-              >
-                <span style={{ fontSize: '28px', display: 'block', marginBottom: '10px' }}>{step.icon}</span>
-                <span style={{
-                  fontSize: '14px', fontWeight: 700,
-                  color: activeStep === step.id ? step.color : '#334155',
-                  display: 'block',
-                }}>
-                  {step.label}
-                </span>
-              </button>
-              {i < PIPELINE_STEPS.length - 1 && (
-                <div style={{
-                  width: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#cbd5e1', fontSize: '16px', flexShrink: 0,
-                  background: 'white', border: '1px solid #f1f5f9', borderLeft: 'none', borderRight: 'none',
-                }}>→</div>
-              )}
-            </React.Fragment>
-          ))}
+        <div className="table-responsive">
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: '0', minWidth: '600px', position: 'relative' }}>
+            {PIPELINE_STEPS.map((step, i) => (
+              <React.Fragment key={step.id}>
+                <button
+                  id={`pipeline-step-${step.id}`}
+                  onClick={() => setActiveStep(activeStep === step.id ? null : step.id)}
+                  style={{
+                    flex: 1,
+                    background: activeStep === step.id ? step.bg : 'white',
+                    border: `1px solid ${activeStep === step.id ? step.color + '44' : '#f1f5f9'}`,
+                    borderRadius: i === 0 ? '16px 0 0 16px' : i === PIPELINE_STEPS.length - 1 ? '0 16px 16px 0' : '0',
+                    padding: '20px 14px',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'background 0.2s ease, border-color 0.2s ease',
+                    outline: 'none',
+                    boxShadow: activeStep === step.id ? `0 4px 20px ${step.color}18` : '0 2px 8px rgba(15,23,42,0.04)',
+                  }}
+                  aria-pressed={activeStep === step.id}
+                >
+                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>{step.icon}</span>
+                  <span style={{
+                    fontSize: '13px', fontWeight: 700,
+                    color: activeStep === step.id ? step.color : '#334155',
+                    display: 'block',
+                  }}>
+                    {step.label}
+                  </span>
+                </button>
+                {i < PIPELINE_STEPS.length - 1 && (
+                  <div style={{
+                    width: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#cbd5e1', fontSize: '14px', flexShrink: 0,
+                    background: 'white', border: '1px solid #f1f5f9', borderLeft: 'none', borderRight: 'none',
+                  }}>→</div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
         {/* Expanded description */}
@@ -612,12 +558,12 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
               background: step.bg,
               border: `1px solid ${step.color}30`,
               borderRadius: '14px',
-              padding: '20px 24px',
-              display: 'flex', alignItems: 'center', gap: '16px',
+              padding: '16px 20px',
+              display: 'flex', alignItems: 'center', gap: '14px',
               animation: 'fadeIn 0.2s ease',
             }}>
-              <span style={{ fontSize: '24px', flexShrink: 0 }}>{step.icon}</span>
-              <p style={{ margin: 0, fontSize: '15px', color: '#334155', lineHeight: 1.65 }}>
+              <span style={{ fontSize: '22px', flexShrink: 0 }}>{step.icon}</span>
+              <p style={{ margin: 0, fontSize: '14px', color: '#334155', lineHeight: 1.6 }}>
                 <strong style={{ color: step.color }}>{step.label}: </strong>{step.description}
               </p>
             </div>
@@ -626,15 +572,15 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── CAPABILITIES ────────────────────────────────────────────────────── */}
-      <section style={{ padding: '64px 0' }}>
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <p style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 12px' }}>What Relay does</p>
-          <h2 style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-0.03em', margin: 0, lineHeight: 1.1 }}>
+      <section className="py-8 sm:py-16">
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>What Relay does</p>
+          <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: 0, lineHeight: 1.15 }}>
             Four ways to recover revenue.
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {CAPABILITIES.map((cap, i) => (
             <a
               key={i}
@@ -647,7 +593,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
                 background: 'white',
                 border: '1px solid #f1f5f9',
                 borderRadius: '20px',
-                padding: '28px 24px',
+                padding: '24px 20px',
                 height: '100%',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
@@ -667,20 +613,20 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
                 }}
               >
                 <div style={{
-                  width: '44px', height: '44px', borderRadius: '12px',
+                  width: '40px', height: '40px', borderRadius: '12px',
                   background: `${cap.color}12`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '22px', marginBottom: '18px',
+                  fontSize: '20px', marginBottom: '16px',
                 }}>
                   {cap.icon}
                 </div>
-                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: '0 0 8px', letterSpacing: '-0.01em' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
                   {cap.title}
                 </h3>
-                <p style={{ fontSize: '13px', fontWeight: 600, color: cap.color, margin: '0 0 10px' }}>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: cap.color, margin: '0 0 8px' }}>
                   {cap.tagline}
                 </p>
-                <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.6 }}>
+                <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.55 }}>
                   {cap.detail}
                 </p>
               </div>
@@ -690,26 +636,18 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── NETWORK SECTION (CALM) ───────────────────────────────────────────── */}
-      <section style={{
-        margin: '32px 0 64px',
-        background: '#f8fafc',
-        border: '1px solid #f1f5f9',
-        borderRadius: '28px',
-        padding: '64px 48px',
-        overflow: 'hidden',
-        position: 'relative',
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+      <section className="my-6 sm:my-14 bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-10 overflow-hidden relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Copy */}
           <div>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 12px' }}>Revenue recovery, continuously.</p>
-            <h2 style={{ fontSize: '36px', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 16px', lineHeight: 1.1 }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>Revenue recovery, continuously.</p>
+            <h2 style={{ fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 12px', lineHeight: 1.15 }}>
               Every failed payment<br />has a different path back.
             </h2>
-            <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.65, margin: '0 0 28px' }}>
+            <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, margin: '0 0 20px' }}>
               Relay maps the right recovery route for each failure type — Card Declined, Insufficient Funds, Expired Card, UPI Failure — and routes them toward captured revenue.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {[
                 { label: 'Card Declined', color: '#ef4444' },
                 { label: 'Insufficient Funds', color: '#f59e0b' },
@@ -717,10 +655,10 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
                 { label: 'UPI Failure', color: '#3b82f6' },
                 { label: 'Network Error', color: '#64748b' },
               ].map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: f.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: '13px', color: '#475569', fontWeight: 500 }}>{f.label}</span>
-                  <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+                  <span style={{ fontSize: '12px', color: '#475569', fontWeight: 500 }}>{f.label}</span>
+                  <div style={{ flex: 1, minWidth: '40px', height: 1, background: '#e2e8f0' }} />
                   <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 600 }}>→ Recovered Revenue</span>
                 </div>
               ))}
@@ -728,8 +666,8 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
           </div>
 
           {/* Calm network visual */}
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <NetworkCanvas width={400} height={320} calm />
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
+            <NetworkCanvas width={380} height={280} calm />
           </div>
         </div>
       </section>
@@ -737,17 +675,6 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       <style>{`
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 3px rgba(16,185,129,0.2); } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0.08); } }
-        @media (max-width: 1024px) {
-          section > div { grid-template-columns: 1fr !important; }
-          h1 { font-size: 42px !important; }
-          h2 { font-size: 28px !important; }
-        }
-        @media (max-width: 640px) {
-          section { padding: 40px 0 !important; }
-          h1 { font-size: 32px !important; }
-          div[style*="repeat(4, 1fr)"] { grid-template-columns: 1fr 1fr !important; }
-          div[style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
-        }
       `}</style>
     </div>
   );

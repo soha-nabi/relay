@@ -114,9 +114,9 @@ export function Analytics({ dashboard, stats, rows: initialRows = [] }: { dashbo
         ) : hasFailureReasonData ? (
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={topReasons} layout="vertical" margin={{ left: 10, right: 12 }}>
+              <BarChart data={topReasons} layout="vertical" margin={{ left: 0, right: 24, top: 5, bottom: 5 }}>
                 <XAxis type="number" hide />
-                <YAxis type="category" dataKey="reason" width={160} tickLine={false} axisLine={false} />
+                <YAxis type="category" dataKey="reason" width={90} tickLine={false} axisLine={false} tick={{ fontSize: 10 }} />
                 <Tooltip formatter={(v: any) => [v, 'Count']} />
                 <Bar dataKey="count" fill="#EF4444" radius={[0, 8, 8, 0]} isAnimationActive={false}>
                   <LabelList dataKey="percentLabel" position="right" />

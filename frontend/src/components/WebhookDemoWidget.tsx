@@ -41,21 +41,21 @@ export default function WebhookDemoWidget({ onWebhookReceived }: Props) {
   };
 
   return (
-    <div style={{ background: '#f8fafc', borderRadius: '20px', padding: '28px', border: '1px solid #e2e8f0' }}>
+    <div style={{ background: '#f8fafc', borderRadius: '20px', padding: '20px', border: '1px solid #e2e8f0' }} className="sm:p-7">
       {/* Title & Badge */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Radio size={18} style={{ color: '#2563eb' }} />
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
             Payment Webhook Simulator
           </h3>
         </div>
-        <span style={{ fontSize: '11px', fontWeight: 700, background: '#fef3c7', color: '#92400e', padding: '3px 10px', borderRadius: '999px', letterSpacing: '0.04em' }}>
+        <span style={{ fontSize: '10px', fontWeight: 700, background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '999px', letterSpacing: '0.04em' }}>
           Demo / Test Only
         </span>
       </div>
 
-      <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 20px' }}>
+      <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 16px', lineHeight: 1.5 }}>
         Simulate incoming payment failure or capture webhooks from Razorpay or Stripe to trigger automatic recovery.
       </p>
 
@@ -66,13 +66,13 @@ export default function WebhookDemoWidget({ onWebhookReceived }: Props) {
       )}
 
       {/* Form controls */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
           <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Event</label>
           <select
             value={eventType}
             onChange={(e) => setEventType(e.target.value as any)}
-            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
           >
             <option value="payment.failed">payment.failed</option>
             <option value="payment.captured">payment.captured</option>

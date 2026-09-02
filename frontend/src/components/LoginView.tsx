@@ -28,20 +28,20 @@ export default function LoginView() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: '16px',
         fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
       }}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: '440px',
+          maxWidth: 'min(440px, 100%)',
           background: 'white',
           borderRadius: '24px',
-          padding: '40px',
           border: '1px solid #e2e8f0',
           boxShadow: '0 12px 40px rgba(15, 23, 42, 0.08)',
         }}
+        className="p-6 sm:p-10"
       >
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -240,7 +240,7 @@ export default function LoginView() {
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: '8px' }}>
             <button
               type="button"
               id="quick-login-merchant"
