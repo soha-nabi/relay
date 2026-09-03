@@ -57,7 +57,7 @@ function RelayVoiceAgentInner({
       await startSession({
         onConnect: () => setError(null),
         onError: (message: string) => {
-          console.error('ElevenLabs Error:', message);
+          console.error('Recovery Copilot Error:', message);
           setError(message || 'An error occurred during the voice conversation.');
         },
         dynamicVariables: {
@@ -82,7 +82,7 @@ function RelayVoiceAgentInner({
       } else {
         setError(
           err.message ||
-            'Could not connect to ElevenLabs agent. Showing interactive voice recovery demo mode.',
+            'Could not connect to voice recovery agent. Showing interactive recovery demo mode.',
         );
         setDemoActive(true);
       }
@@ -121,55 +121,64 @@ function RelayVoiceAgentInner({
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
-              width: '36px',
-              height: '36px',
+              width: '40px',
+              height: '40px',
               borderRadius: '12px',
-              background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+              background: 'linear-gradient(135deg, #0B1533 0%, #1e293b 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'white',
-              boxShadow: '0 4px 12px rgba(37,99,235,0.25)',
+              boxShadow: '0 4px 12px rgba(11, 21, 51, 0.2)',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              position: 'relative',
+              flexShrink: 0,
             }}
           >
-            <Bot size={20} />
+            <Sparkles size={20} style={{ color: '#60a5fa' }} />
+            <span
+              style={{
+                position: 'absolute',
+                top: '-2px',
+                right: '-2px',
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#22c55e',
+                border: '2px solid #ffffff',
+              }}
+            />
           </div>
           <div>
-            <h3
-              style={{
-                fontSize: '15px',
-                fontWeight: 800,
-                color: '#0f172a',
-                margin: 0,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              Relay AI Voice Agent
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0B1533', margin: 0, letterSpacing: '-0.02em' }}>
+                Recovery Copilot
+              </h3>
               <span
                 style={{
                   fontSize: '10px',
                   fontWeight: 700,
-                  background: '#eff6ff',
-                  color: '#2563eb',
-                  padding: '2px 6px',
-                  borderRadius: '6px',
-                  border: '1px solid #dbeafe',
+                  color: '#16a34a',
+                  background: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                  padding: '2px 7px',
+                  borderRadius: '999px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
                 }}
               >
-                ElevenLabs
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#22c55e' }} />
+                AI Ready
               </span>
-            </h3>
-            <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>
-              Smart payment recovery voice copilot
+            </div>
+            <p style={{ fontSize: '12px', color: '#64748b', margin: '2px 0 0', fontWeight: 500 }}>
+              {status === 'connecting' ? 'Connecting to voice session...' : 'AI-powered recovery assistant'}
             </p>
           </div>
         </div>
-
         {status === 'connected' && (
           <div
             style={{
@@ -310,10 +319,10 @@ function RelayVoiceAgentInner({
               boxShadow: '0 4px 14px rgba(15,23,42,0.15)',
               transition: 'all 0.15s ease',
             }}
-            aria-label="Talk to Relay Voice Agent"
+            aria-label="Start Recovery Call"
           >
             <Mic size={18} style={{ color: '#60a5fa' }} />
-            Start Voice Recovery Agent
+            Start Recovery Call
           </button>
         ) : status === 'connecting' ? (
           <div
@@ -332,7 +341,7 @@ function RelayVoiceAgentInner({
             }}
           >
             <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
-            Connecting to ElevenLabs...
+            Connecting to Recovery Copilot...
           </div>
         ) : (
           <button
@@ -425,7 +434,7 @@ export default function RelayVoiceAgent({
 
   const agentId =
     (import.meta as any).env?.VITE_ELEVENLABS_AGENT_ID ||
-    'agent_8601m1a08qssfr2ah44m7g3ver44';
+    'agent_3701m1mhkvthfj8trka6n1vt436k';
 
   const inner = (
     <ConversationProvider agentId={agentId}>
@@ -460,7 +469,7 @@ export default function RelayVoiceAgent({
                 {/* Close Button Header */}
                 <div className="px-4 sm:px-6 pt-2 pb-0 flex items-center justify-between">
                   <div className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-                    AI Voice Copilot
+                    Recovery Copilot
                   </div>
                   <button
                     onClick={() => setIsOpen(false)}
@@ -501,7 +510,7 @@ export default function RelayVoiceAgent({
               }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; }}
-              aria-label="Open Relay Voice Agent"
+              aria-label="Open Recovery Copilot"
             >
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Mic size={18} style={{ color: '#93c5fd' }} />
@@ -518,8 +527,8 @@ export default function RelayVoiceAgent({
                   }}
                 />
               </div>
-              <span className="hidden xs:inline sm:inline">Talk to Voice Agent</span>
-              <span className="inline xs:hidden sm:hidden">AI Voice</span>
+              <span className="hidden xs:inline sm:inline">Talk to Recovery Copilot</span>
+              <span className="inline xs:hidden sm:hidden">Recovery Copilot</span>
               <Sparkles size={14} style={{ color: '#fbbf24' }} />
             </button>
           </div>
