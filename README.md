@@ -2,11 +2,15 @@
 
 Relay is an AI-powered payment recovery platform designed to help merchants identify, automate, and recover failed payment transactions. The platform provides recovery intelligence, workflow automation, analytics, and role-based dashboards to reduce revenue leakage and improve payment success rates.
 
-# Live Demo
-Application
--Frontend: https://relay-pi-snowy.vercel.app
--Backend API: https://relay-recovery.onrender.com
--API Documentation: https://relay-recovery.onrender.com/docs
+## Live Demo
+
+| Resource | Link |
+|-----------|------|
+| Frontend Application | https://relay-pi-snowy.vercel.app |
+| Backend API | https://relay-recovery.onrender.com |
+| API Documentation | https://relay-recovery.onrender.com/docs |
+| GitHub Repository | https://github.com/soha-nabi/relay |
+
 
 ## Overview
 Failed payments result in lost revenue, increased churn, and manual operational effort. Relay addresses these challenges by:
