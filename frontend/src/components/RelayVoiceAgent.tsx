@@ -7,6 +7,9 @@ import {
   Sparkles,
   X,
   Bot,
+  Smartphone,
+  CreditCard,
+  Zap,
 } from 'lucide-react';
 import {
   ConversationProvider,
@@ -372,10 +375,10 @@ function RelayVoiceAgentInner({
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
-            { label: '📱 Switch to UPI', action: () => onSelectMethod?.('UPI') },
-            { label: '💳 Switch to Card', action: () => onSelectMethod?.('Card') },
-            { label: '⚡ Trigger Payment', action: () => onPayNow?.(), green: true },
-          ].map(({ label, action, green }) => (
+            { label: 'Switch to UPI', icon: <Smartphone size={12} />, action: () => onSelectMethod?.('UPI') },
+            { label: 'Switch to Card', icon: <CreditCard size={12} />, action: () => onSelectMethod?.('Card') },
+            { label: 'Trigger Payment', icon: <Zap size={12} />, action: () => onPayNow?.(), green: true },
+          ].map(({ label, icon, action, green }) => (
             <button
               key={label}
               onClick={action}
@@ -388,8 +391,12 @@ function RelayVoiceAgentInner({
                 fontWeight: 600,
                 color: green ? '#166534' : '#334155',
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
               }}
             >
+              {icon}
               {label}
             </button>
           ))}

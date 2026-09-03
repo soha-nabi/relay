@@ -179,13 +179,15 @@ export default function AutomationsCenter() {
 
       {/* Notifications */}
       {error && (
-        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '12px 16px', color: '#b91c1c', fontSize: '13px', marginBottom: '20px' }}>
-          ⚠️ {error}
+        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '12px 16px', color: '#b91c1c', fontSize: '13px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertCircle size={15} style={{ flexShrink: 0 }} />
+          <span>{error}</span>
         </div>
       )}
       {successMsg && (
-        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '12px 16px', color: '#166534', fontSize: '13px', marginBottom: '20px' }}>
-          ✓ {successMsg}
+        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '12px 16px', color: '#166534', fontSize: '13px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
+          <span>{successMsg}</span>
         </div>
       )}
 

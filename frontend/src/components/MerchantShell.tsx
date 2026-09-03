@@ -115,7 +115,7 @@ export default function MerchantShell({ dashboard, onRefreshData }: Props) {
             }}
           />
           {/* Top Opportunities preview */}
-          <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+          <div className="mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
             <RecoveryOpportunities opportunities={dashboard?.recommendations || []} />
             <LiveActivityFeed />
           </div>
@@ -169,34 +169,34 @@ export default function MerchantShell({ dashboard, onRefreshData }: Props) {
 
       {/* ── AI VOICE AGENT STUDIO ───────────────────────────────────────── */}
       {activeTab === 'agent' && (
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6 lg:gap-8 min-h-[80vh] overflow-x-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 min-h-[70vh] overflow-x-hidden">
           <div>
-            <div style={{ background: 'white', borderRadius: '24px', padding: '24px', border: '1px solid #e2e8f0', marginBottom: '24px' }} className="sm:p-8">
+            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', marginBottom: '16px' }} className="sm:p-6">
               <span style={{ fontSize: '11px', fontWeight: 700, color: '#2563eb', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 ElevenLabs Conversational AI
               </span>
-              <h2 style={{ fontSize: 'clamp(20px, 4vw, 24px)', fontWeight: 800, color: '#0f172a', margin: '6px 0 10px' }}>
+              <h2 style={{ fontSize: 'clamp(18px, 3.5vw, 22px)', fontWeight: 800, color: '#0f172a', margin: '4px 0 8px' }}>
                 Voice Recovery Agent Studio
               </h2>
-              <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
+              <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
                 Relay uses autonomous ElevenLabs voice agents to reach out to customers immediately upon high-value transaction failure, troubleshoot the decline reason, and execute instant payment method fallbacks.
               </p>
 
-              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-                  <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px' }}>Agent Tooling Capabilities</h4>
-                  <ul style={{ fontSize: '12px', color: '#64748b', margin: 0, paddingLeft: '18px', lineHeight: 1.6 }}>
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                  <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px' }}>Agent Tooling Capabilities</h4>
+                  <ul style={{ fontSize: '11px', color: '#64748b', margin: 0, paddingLeft: '16px', lineHeight: 1.6 }}>
                     <li><code>open_payment_method_selector</code>: Dynamically switches the customer to UPI / Alternate Card</li>
                     <li><code>open_customer_payment_flow</code>: Completes and verifies the pending transaction in real time</li>
                     <li>Adaptive decline explanation for Insufficient Funds, 3DS Auth Timeouts, and Expired Cards</li>
                   </ul>
                 </div>
 
-                <div style={{ background: '#eff6ff', padding: '16px', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e40af', marginBottom: '4px' }}>
-                    🎙️ Test Live Conversation
+                <div style={{ background: '#eff6ff', padding: '14px', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#1e40af', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Mic2 size={14} /> Test Live Conversation
                   </div>
-                  <div style={{ fontSize: '12px', color: '#1e3a8a', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: '11px', color: '#1e3a8a', lineHeight: 1.5 }}>
                     Click <strong>Start Voice Recovery Agent</strong> to simulate a real customer recovery dialogue.
                   </div>
                 </div>

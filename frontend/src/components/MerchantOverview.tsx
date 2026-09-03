@@ -1,4 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  Zap, Search, GitBranch, RefreshCw, CheckCircle2,
+  RotateCcw, Calendar, Sliders, Users, ArrowRight
+} from 'lucide-react';
 import type { DashboardData } from '../types';
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
@@ -228,7 +232,7 @@ const PIPELINE_STEPS = [
   {
     id: 'detect',
     label: 'Detect',
-    icon: '⚡',
+    icon: <Zap size={18} />,
     color: '#ef4444',
     bg: 'rgba(239,68,68,0.08)',
     description:
@@ -237,7 +241,7 @@ const PIPELINE_STEPS = [
   {
     id: 'diagnose',
     label: 'Diagnose',
-    icon: '🔍',
+    icon: <Search size={18} />,
     color: '#f59e0b',
     bg: 'rgba(245,158,11,0.08)',
     description:
@@ -246,7 +250,7 @@ const PIPELINE_STEPS = [
   {
     id: 'decide',
     label: 'Decide',
-    icon: '🧠',
+    icon: <GitBranch size={18} />,
     color: '#3b82f6',
     bg: 'rgba(59,130,246,0.08)',
     description:
@@ -255,7 +259,7 @@ const PIPELINE_STEPS = [
   {
     id: 'recover',
     label: 'Recover',
-    icon: '🔄',
+    icon: <RotateCcw size={18} />,
     color: '#8b5cf6',
     bg: 'rgba(139,92,246,0.08)',
     description:
@@ -264,7 +268,7 @@ const PIPELINE_STEPS = [
   {
     id: 'stop',
     label: 'Stop',
-    icon: '✅',
+    icon: <CheckCircle2 size={18} />,
     color: '#10b981',
     bg: 'rgba(16,185,129,0.08)',
     description:
@@ -275,7 +279,7 @@ const PIPELINE_STEPS = [
 // ─── Capability Cards ──────────────────────────────────────────────────────────
 const CAPABILITIES = [
   {
-    icon: '🔁',
+    icon: <RotateCcw size={20} />,
     title: 'Smart Retry',
     tagline: 'Relay chooses the next retry window.',
     detail:
@@ -284,7 +288,7 @@ const CAPABILITIES = [
     color: '#3b82f6',
   },
   {
-    icon: '📅',
+    icon: <Calendar size={20} />,
     title: 'Custom Retry',
     tagline: 'Control exactly when Relay retries.',
     detail:
@@ -293,7 +297,7 @@ const CAPABILITIES = [
     color: '#8b5cf6',
   },
   {
-    icon: '⚙️',
+    icon: <Sliders size={20} />,
     title: 'Automations',
     tagline: 'Build recovery workflows without code.',
     detail:
@@ -302,7 +306,7 @@ const CAPABILITIES = [
     color: '#f59e0b',
   },
   {
-    icon: '👤',
+    icon: <Users size={20} />,
     title: 'Customer Recovery',
     tagline: 'Give customers a frictionless path to payment.',
     detail:
@@ -364,7 +368,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section
         ref={heroRef}
-        className="flex items-center justify-center py-6 sm:py-10 lg:py-14 animate-fadeInUp"
+        className="flex items-center justify-center py-2 sm:py-4 lg:py-6 animate-fadeInUp"
         style={{
           minHeight: 'auto',
           opacity: heroVisible ? 1 : 0,
@@ -373,41 +377,41 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
         }}
       >
         <div style={{ width: '100%' }}>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-8 items-center">
 
             {/* Left: Copy */}
             <div>
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200/60 rounded-full px-3 py-1 text-xs font-semibold text-blue-600 mb-3 sm:mb-4">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200/60 rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 mb-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Recovery engine active</span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.12] mb-3 sm:mb-4">
+              <h1 className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 leading-[1.15] mb-2 sm:mb-3">
                 Recover revenue<br />
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   before it disappears.
                 </span>
               </h1>
 
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-lg mb-5 sm:mb-7">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg mb-4 sm:mb-5">
                 Relay detects failed payments, chooses the right recovery action,
                 and closes the loop when the money comes back.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
                 <button
                   id="hero-cta-recoveries"
                   onClick={() => nav('recovery')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-semibold shadow-md hover:bg-slate-800 transition-all active:scale-[0.98]"
-                  style={{ minHeight: '44px' }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs sm:text-sm font-semibold shadow-sm hover:bg-slate-800 transition-all active:scale-[0.98]"
+                  style={{ minHeight: '40px' }}
                 >
                   View recoveries
                 </button>
                 <button
                   id="hero-cta-automations"
                   onClick={() => nav('automations')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 rounded-xl bg-white text-slate-900 border border-slate-200 text-xs sm:text-sm font-semibold shadow-sm hover:border-blue-200 hover:bg-blue-50/50 transition-all active:scale-[0.98]"
-                  style={{ minHeight: '44px' }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white text-slate-900 border border-slate-200 text-xs sm:text-sm font-semibold shadow-sm hover:border-blue-200 hover:bg-blue-50/50 transition-all active:scale-[0.98]"
+                  style={{ minHeight: '40px' }}
                 >
                   Explore automations
                 </button>
@@ -415,13 +419,13 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
             </div>
 
             {/* Right: Network Visual */}
-            <div className="flex justify-center bg-slate-50/80 border border-slate-200/80 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-sm overflow-hidden w-full max-h-[220px] sm:max-h-none">
-              <NetworkCanvas width={460} height={280} />
+            <div className="flex justify-center bg-slate-50/80 border border-slate-200/80 rounded-2xl p-2 sm:p-3 shadow-sm overflow-hidden w-full max-h-[200px] sm:max-h-none">
+              <NetworkCanvas width={440} height={230} />
             </div>
           </div>
 
           {/* ── LIVE STATUS BAR ─────────────────────────────────────────── */}
-          <div className="mt-6 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-px sm:bg-slate-200 rounded-2xl overflow-hidden sm:border sm:border-slate-200">
+          <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-px sm:bg-slate-200 rounded-xl overflow-hidden sm:border sm:border-slate-200 shadow-sm">
             {[
               { label: 'Revenue at Risk', value: money(atRisk), color: '#ef4444', note: 'Active failed payments' },
               { label: 'Recovered', value: money(recovered), color: '#10b981', note: 'Closed recovery sessions' },
@@ -429,15 +433,15 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
             ].map((m, i) => (
               <div
                 key={i}
-                className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none"
+                className="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-none border border-slate-200 sm:border-0"
               >
-                <p className="text-[11px] font-semibold text-slate-400 tracking-wider uppercase mb-1">
+                <p className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mb-1">
                   {m.label}
                 </p>
-                <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight mb-0.5 leading-tight" style={{ color: m.color }}>
+                <p className="text-lg sm:text-xl lg:text-2xl font-extrabold tracking-tight mb-0.5 leading-tight" style={{ color: m.color }}>
                   {m.value}
                 </p>
-                <p className="text-[11px] text-slate-400 m-0">{m.note}</p>
+                <p className="text-[10px] text-slate-400 m-0">{m.note}</p>
               </div>
             ))}
           </div>
@@ -445,28 +449,28 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── LIVE ACTIVITY FEED ──────────────────────────────────────────────── */}
-      <section className="py-8 sm:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+      <section className="py-4 sm:py-6 border-t border-slate-100">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
           <div>
-            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 6px' }}>
               Live status
             </p>
-            <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 12px', lineHeight: 1.15 }}>
+            <h2 style={{ fontSize: 'clamp(20px, 3.5vw, 26px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 8px', lineHeight: 1.2 }}>
               Relay is working.
             </h2>
-            <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, maxWidth: '400px', margin: 0 }}>
+            <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.55, maxWidth: '400px', margin: 0 }}>
               Every event in the recovery lifecycle is tracked in real time.
               The feed below reflects your actual recovery sessions.
             </p>
           </div>
 
           <div style={{
-            background: 'white', border: '1px solid #f1f5f9',
-            borderRadius: '20px', overflow: 'hidden',
-            boxShadow: '0 4px 20px rgba(15,23,42,0.04)',
+            background: 'white', border: '1px solid #e2e8f0',
+            borderRadius: '16px', overflow: 'hidden',
+            boxShadow: '0 1px 3px rgba(15,23,42,0.03), 0 2px 8px rgba(15,23,42,0.02)',
             width: '100%',
           }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ padding: '14px 18px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 0 3px rgba(16,185,129,0.2)', animation: 'pulse 2s ease-in-out infinite' }} />
               <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>Recovery activity</span>
             </div>
@@ -474,7 +478,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
               {feed.map((item, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '12px 18px',
+                  padding: '10px 16px',
                   borderTop: i === 0 ? 'none' : '1px solid #f8fafc',
                   transition: 'background 0.15s',
                 }}>
@@ -495,13 +499,13 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── RECOVERY PIPELINE ───────────────────────────────────────────────── */}
-      <section className="py-8 sm:py-16">
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>How it works</p>
-          <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 10px', lineHeight: 1.15 }}>
+      <section className="py-4 sm:py-6 border-t border-slate-100">
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 4px' }}>How it works</p>
+          <h2 style={{ fontSize: 'clamp(20px, 3.5vw, 26px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 6px', lineHeight: 1.2 }}>
             The recovery pipeline.
           </h2>
-          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '480px', margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '13px', color: '#64748b', maxWidth: '480px', margin: '0 auto', lineHeight: 1.55 }}>
             From the moment a payment fails to the moment it is recovered — Relay handles every step.
           </p>
         </div>
@@ -528,7 +532,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
                   }}
                   aria-pressed={activeStep === step.id}
                 >
-                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>{step.icon}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px', color: activeStep === step.id ? step.color : '#64748b' }}>{step.icon}</span>
                   <span style={{
                     fontSize: '13px', fontWeight: 700,
                     color: activeStep === step.id ? step.color : '#334155',
@@ -562,7 +566,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
               display: 'flex', alignItems: 'center', gap: '14px',
               animation: 'fadeIn 0.2s ease',
             }}>
-              <span style={{ fontSize: '22px', flexShrink: 0 }}>{step.icon}</span>
+              <span style={{ flexShrink: 0, color: step.color }}>{step.icon}</span>
               <p style={{ margin: 0, fontSize: '14px', color: '#334155', lineHeight: 1.6 }}>
                 <strong style={{ color: step.color }}>{step.label}: </strong>{step.description}
               </p>
@@ -572,15 +576,15 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── CAPABILITIES ────────────────────────────────────────────────────── */}
-      <section className="py-8 sm:py-16">
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>What Relay does</p>
-          <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: 0, lineHeight: 1.15 }}>
+      <section className="py-4 sm:py-6 border-t border-slate-100">
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 4px' }}>What Relay does</p>
+          <h2 style={{ fontSize: 'clamp(20px, 3.5vw, 26px)', fontWeight: 800, letterSpacing: '-0.03em', margin: 0, lineHeight: 1.2 }}>
             Four ways to recover revenue.
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
           {CAPABILITIES.map((cap, i) => (
             <a
               key={i}
@@ -591,42 +595,43 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
             >
               <div style={{
                 background: 'white',
-                border: '1px solid #f1f5f9',
-                borderRadius: '20px',
-                padding: '24px 20px',
+                border: '1px solid #e2e8f0',
+                borderRadius: '16px',
+                padding: '20px 18px',
                 height: '100%',
                 cursor: 'pointer',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
-                boxShadow: '0 2px 8px rgba(15,23,42,0.04)',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
+                boxShadow: '0 1px 3px rgba(15,23,42,0.03), 0 2px 8px rgba(15,23,42,0.02)',
               }}
                 onMouseEnter={e => {
                   const t = e.currentTarget;
-                  t.style.transform = 'translateY(-4px)';
-                  t.style.boxShadow = '0 12px 32px rgba(15,23,42,0.10)';
-                  t.style.borderColor = `${cap.color}44`;
+                  t.style.transform = 'translateY(-2px)';
+                  t.style.boxShadow = '0 8px 24px rgba(15,23,42,0.08)';
+                  t.style.borderColor = `${cap.color}55`;
                 }}
                 onMouseLeave={e => {
                   const t = e.currentTarget;
                   t.style.transform = '';
-                  t.style.boxShadow = '0 2px 8px rgba(15,23,42,0.04)';
-                  t.style.borderColor = '#f1f5f9';
+                  t.style.boxShadow = '0 1px 3px rgba(15,23,42,0.03), 0 2px 8px rgba(15,23,42,0.02)';
+                  t.style.borderColor = '#e2e8f0';
                 }}
               >
                 <div style={{
-                  width: '40px', height: '40px', borderRadius: '12px',
+                  width: '36px', height: '36px', borderRadius: '10px',
                   background: `${cap.color}12`,
+                  color: cap.color,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '20px', marginBottom: '16px',
+                  marginBottom: '12px',
                 }}>
                   {cap.icon}
                 </div>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: '0 0 4px', letterSpacing: '-0.01em' }}>
                   {cap.title}
                 </h3>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: cap.color, margin: '0 0 8px' }}>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: cap.color, margin: '0 0 6px' }}>
                   {cap.tagline}
                 </p>
-                <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.55 }}>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
                   {cap.detail}
                 </p>
               </div>
@@ -636,18 +641,18 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
       </section>
 
       {/* ── NETWORK SECTION (CALM) ───────────────────────────────────────────── */}
-      <section className="my-6 sm:my-14 bg-slate-50 border border-slate-100 rounded-3xl p-6 sm:p-10 overflow-hidden relative">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <section className="my-4 sm:my-6 bg-slate-50 border border-slate-200/80 rounded-2xl p-5 sm:p-7 overflow-hidden relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
           {/* Copy */}
           <div>
-            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 8px' }}>Revenue recovery, continuously.</p>
-            <h2 style={{ fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 12px', lineHeight: 1.15 }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 6px' }}>Revenue recovery, continuously.</p>
+            <h2 style={{ fontSize: 'clamp(18px, 3.5vw, 24px)', fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 8px', lineHeight: 1.2 }}>
               Every failed payment<br />has a different path back.
             </h2>
-            <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, margin: '0 0 20px' }}>
+            <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.55, margin: '0 0 16px' }}>
               Relay maps the right recovery route for each failure type — Card Declined, Insufficient Funds, Expired Card, UPI Failure — and routes them toward captured revenue.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {[
                 { label: 'Card Declined', color: '#ef4444' },
                 { label: 'Insufficient Funds', color: '#f59e0b' },
@@ -667,7 +672,7 @@ export default function MerchantOverview({ dashboard, onNavigate }: Props) {
 
           {/* Calm network visual */}
           <div style={{ display: 'flex', justifyContent: 'center', width: '100%', overflow: 'hidden' }}>
-            <NetworkCanvas width={380} height={280} calm />
+            <NetworkCanvas width={380} height={240} calm />
           </div>
         </div>
       </section>

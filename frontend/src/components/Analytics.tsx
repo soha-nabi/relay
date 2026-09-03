@@ -156,5 +156,11 @@ export function Analytics({ dashboard, stats, rows: initialRows = [] }: { dashbo
 }
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
-  return <article className="surface min-h-[280px] p-6"><p className="section-label">DECISION INSIGHT</p><h3 className="mt-2 text-[15px] font-bold">{title}</h3>{children}</article>
+  return (
+    <article className="dashboard-card">
+      <p className="section-label">Decision Insight</p>
+      <h3 className="mt-1 text-[15px] font-bold text-slate-900">{title}</h3>
+      {children}
+    </article>
+  );
 }

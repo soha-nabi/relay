@@ -103,11 +103,11 @@ function MainAppShell() {
       {/* ── Role Topbar ─────────────────────────────────────────────────── */}
       <header style={{ position: 'sticky', top: 0, zIndex: 40, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }} className="sm:px-6">
-          <div style={{ display: 'flex', minHeight: '64px', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', padding: '8px 0' }}>
+          <div style={{ display: 'flex', minHeight: '56px', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', padding: '6px 0' }}>
             {/* Brand + Active Role */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="sm:gap-4">
-              <div style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.04em', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '26px', height: '26px', borderRadius: '8px', background: '#0f172a', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 800 }}>
+              <div style={{ fontSize: '17px', fontWeight: 800, letterSpacing: '-0.04em', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#0f172a', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 800 }}>
                   R
                 </span>
                 relay
@@ -136,7 +136,7 @@ function MainAppShell() {
                     background: 'white',
                     border: '1px solid #cbd5e1',
                     borderRadius: '8px',
-                    padding: '6px 10px',
+                    padding: '5px 10px',
                     fontSize: '12px',
                     fontWeight: 600,
                     color: '#334155',
@@ -187,7 +187,7 @@ function MainAppShell() {
       )}
 
       {/* ── Main Role Shell ─────────────────────────────────────────────── */}
-      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '16px 12px 96px' }} className="sm:p-6 md:p-8">
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '12px 12px 64px' }} className="sm:p-5 md:p-6">
         {role === 'admin' && <AdminShell />}
         {role === 'merchant' && <MerchantShell dashboard={d} onRefreshData={loadData} />}
         {role === 'user' && <UserShell />}
