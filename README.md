@@ -6,7 +6,8 @@ Relay is an AI-powered payment recovery platform designed to help merchants iden
 
 | Resource | Link |
 |-----------|------|
-| Frontend Application | https://relay-pi-snowy.vercel.app |
+| Frontend Application | https://relay-pi-snowy.vercel.app
+https://relay-relaysupportai-6734.vercel.app/|
 | Backend API | https://relay-recovery.onrender.com |
 | API Documentation | https://relay-recovery.onrender.com/docs |
 | GitHub Repository | https://github.com/soha-nabi/relay |
