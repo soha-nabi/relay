@@ -1,0 +1,70 @@
+﻿/* =====================================================
+   RELAY DASHBOARD â€” Design System v3.4
+   Matches landing page: violet / fuchsia / pink aesthetic
+   ===================================================== */
+
+/* â”€â”€ Design Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+:root {
+  /* Brand palette */
+  --violet-50:  #f5f3ff;
+  --violet-100: #ede9fe;
+  --violet-200: #ddd6fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --violet-500: #8b5cf6;
+  --violet-600: #7c3aed;
+  --violet-700: #6d28d9;
+  --violet-800: #5b21b6;
+
+  --fuchsia-400: #e879f9;
+  --fuchsia-500: #d946ef;
+  --fuchsia-600: #c026d3;
+
+  --pink-400: #f472b6;
+  --pink-500: #ec4899;
+  --pink-600: #db2777;
+
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+
+  /* Semantic aliases */
+  --accent:         var(--violet-600);
+  --accent-light:   var(--violet-50);
+  --accent-border:  var(--violet-200);
+
+  /* Keep legacy names for JS compatibility */
+  --blue:         var(--indigo-600);
+  --blue-hover:   var(--violet-700);
+  --blue-light:   var(--violet-50);
+  --purple:       var(--violet-500);
+  --purple-light: var(--violet-100);
+
+  --green:          #16a34a;
+  --green-light:    #dcfce7;
+  --green-border:   #bbf7d0;
+
+  --red:            #ef4444;
+  --red-light:      #fee2e2;
+  --red-border:     #fecaca;
+
+  --warning:        #f59e0b;
+  --warning-light:  #fef3c7;
+  --warning-border: #fde68a;
+
+  --ink:    #0f172a;
+  --muted:  #64748b;
+  --line:   #e2e8f0;
+  --canvas: #f8fafc;
+  --card-bg:#ffffff;
+
+  /* Sidebar */
+  --sidebar-bg:     #0f0a1e;
+  --sidebar-width:  256px;
+  --sidebar-line:   rgba(255,255,255,0.07);
+
+  /* Shadows */
+  --shadow-card:  0 1px 4px rgba(15,10,30,0.06), 0 0 0 1px rgba(226,232,240,0.8);
+  --shadow-panel: 0 4px 24px -4px rgba(15,10,30,0.08), 0 0 0 1px rgba(226,232,240,0.8);
+  --shadow-violet:0 8px 24px -4px rgba(124,58,237,0.3), 0 0 16px 1px rgba(217,70,239,0.2);
+}
+

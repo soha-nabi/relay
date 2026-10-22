@@ -5,7 +5,6 @@ import resend
 from dotenv import load_dotenv
 from backend.email_log_repository import EmailLogRepository
 
-
 load_dotenv()
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
@@ -17,24 +16,32 @@ RESEND_FROM_EMAIL = os.getenv(
 
 def send_email(to: str, subject: str, html: str) -> dict[str, Any]:
     """Dispatch email using Resend API."""
-    if not RESEND_API_KEY:
-        raise RuntimeError("RESEND_API_KEY is not configured")
+    api_key = os.getenv("RESEND_API_KEY") or RESEND_API_KEY
+    if not api_key:
+        return {"status": "failed", "reason": "Missing API key"}
 
-    resend.api_key = RESEND_API_KEY
+    from_email = os.getenv("RESEND_FROM_EMAIL") or RESEND_FROM_EMAIL or "onboarding@resend.dev"
 
-    result = resend.Emails.send(
-        {
-            "from": RESEND_FROM_EMAIL,
-            "to": [to],
-            "subject": subject,
-            "html": html,
+    try:
+        resend.api_key = api_key
+        result = resend.Emails.send(
+            {
+                "from": from_email,
+                "to": [to],
+                "subject": subject,
+                "html": html,
+            }
+        )
+        return {
+            "status": "sent",
+            "message_id": result.get("id") if isinstance(result, dict) else getattr(result, "id", None),
         }
-    )
-
-    return {
-        "status": "sent",
-        "message_id": result.get("id") if isinstance(result, dict) else getattr(result, "id", None),
-    }
+    except Exception as e:
+        return {
+            "status": "failed",
+            "reason": "Resend API error",
+            "error": str(e),
+        }
 
 
 def send_welcome_email(to: str, name: str, role: str) -> dict[str, Any]:
@@ -66,8 +73,12 @@ def send_welcome_email(to: str, name: str, role: str) -> dict[str, Any]:
     # Send email
     try:
         result = send_email(to=to, subject=subject, html=body)
-        status = "sent"
-        error = None
+        if result.get("status") == "sent":
+            status = "sent"
+            error = None
+        else:
+            status = "failed"
+            error = result.get("reason") or result.get("error")
     except Exception as e:
         result = {}
         status = "failed"
@@ -80,7 +91,7 @@ def send_welcome_email(to: str, name: str, role: str) -> dict[str, Any]:
         "subject": subject,
         "type": "welcome_email",
         "status": status,
-        "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+        "timestamp": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
     }
     if error:
         log_entry["error"] = error
@@ -94,15 +105,18 @@ def send_welcome_email_task(email: str, name: str, role: str) -> None:
     send_welcome_email(to=email, name=name, role=role)
 
 
-
 def send_payment_recovery_email(
     customer_name: str,
     customer_email: str,
     amount: float,
-    failure_reason: str,
-    payment_url: str,
+    payment_url: str = "",
+    failure_reason: str = "Payment verification needed",
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Generate and send standard payment recovery template email."""
+    if not customer_email or not customer_email.strip():
+        return {"status": "ignored", "reason": "No customer email"}
+
     safe_name = escape(customer_name or "Customer")
     safe_reason = escape(failure_reason or "payment issue")
     safe_url = escape(payment_url or "", quote=True)
@@ -179,8 +193,8 @@ def send_session_recovery_email(
     msg_id = res.get("message_id") or "msg_sent"
     mark_recovery_email_sent(
         session=session,
-        message_id=msg_id,
         attempt=attempt,
+        channel="email",
         details={
             "to": c_email,
             "amount": amt,

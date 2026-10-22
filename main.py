@@ -10,14 +10,24 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 import pandas as pd
-from fastapi import BackgroundTasks, Depends, FastAPI, File, Header, HTTPException, Request, UploadFile, status
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Header, HTTPException, Request, Response, UploadFile, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from backend.email_service import send_email, send_session_recovery_email
 from backend.elevenlabs_service import trigger_session_voice_call
+from backend.twilio_service import (
+    initiate_recovery_call,
+    send_recovery_sms,
+    is_twilio_configured,
+    get_twilio_status,
+    generate_outbound_twiml,
+)
+from backend.scheduler_service import (
+    schedule_delayed_retry,
+    get_scheduler_status,
+)
 from backend.auth import USERS, get_current_user, require_role, router as auth_router
 from backend.db import (
     audit_log_repository,
@@ -122,13 +132,6 @@ async def test_email(request: EmailTestRequest):
             status_code=500,
             detail="Email delivery failed"
         )
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Mount React production build assets if compiled
-_frontend_dist_assets = os.path.join(os.path.dirname(__file__), "frontend", "dist", "assets")
-if os.path.exists(_frontend_dist_assets):
-    app.mount("/assets", StaticFiles(directory=_frontend_dist_assets), name="assets")
-
 app.include_router(auth_router)
 app.include_router(agent_router)
 
@@ -212,6 +215,18 @@ class DataStore:
             # Fallback to demo merchant dataset if available
             if "merchant" in self._datasets:
                 return self._datasets["merchant"]
+
+            # Fallback to sample_payments.csv if available on disk
+            sample_csv = os.path.join(os.path.dirname(__file__), "sample_payments.csv")
+            if os.path.isfile(sample_csv):
+                try:
+                    df = pd.read_csv(sample_csv)
+                    ds = Dataset(df, datetime.now(timezone.utc).isoformat(), "sample_payments.csv")
+                    self._datasets["merchant"] = ds
+                    return ds
+                except Exception:
+                    pass
+
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="No dataset uploaded yet. Please upload a CSV file first.",
@@ -362,11 +377,8 @@ async def root() -> RedirectResponse:
 
 
 @app.get("/app", include_in_schema=False)
-async def dashboard_app() -> FileResponse:
-    react_index = os.path.join(os.path.dirname(__file__), "frontend", "dist", "index.html")
-    if os.path.exists(react_index):
-        return FileResponse(react_index)
-    return FileResponse("static/dashboard.html")
+async def dashboard_app() -> Response:
+    return HTMLResponse("<!doctype html><html><head><title>Relay Platform</title></head><body><h1>Relay API Server</h1><p>Relay Platform is running. Access the Next.js UI at port 3000.</p></body></html>")
 
 
 @app.get("/health")
@@ -777,6 +789,137 @@ async def trigger_voice_call_endpoint(
     return result
 
 
+class TelephonyActionRequest(BaseModel):
+    phone_number: str = "+15551234567"
+    custom_message: str | None = None
+
+
+@app.get("/api/telephony/status")
+async def get_telephony_status() -> dict:
+    """Return status of Twilio voice and SMS telephony integration."""
+    return get_twilio_status()
+
+
+@app.get("/api/scheduler/status")
+async def get_background_scheduler_status() -> dict:
+    """Return status of Upstash QStash and local delayed background scheduler."""
+    return get_scheduler_status()
+
+
+@app.post("/api/telephony/call/{session_id}")
+async def trigger_twilio_call(
+    session_id: str,
+    payload: TelephonyActionRequest | None = None,
+    user: dict = Depends(require_role("merchant", "admin")),
+) -> dict:
+    """Trigger an outbound Twilio phone call to customer regarding failed payment."""
+    dataset = data_store.get(user["username"])
+    session = dataset.recovery_sessions.get(session_id)
+    if session is None and is_mongodb_configured():
+        session = recovery_session_repository.get(session_id, merchant_id=user.get("username"))
+        if session:
+            dataset.recovery_sessions[session_id] = session
+
+    if session is None:
+        raise HTTPException(status_code=404, detail="Recovery session not found")
+
+    target_phone = (payload.phone_number if payload else None) or session.get("customer_phone", "+15551234567")
+    cust_id = session.get("customer_id", "Customer")
+    amount = float(session.get("amount", 0.0))
+
+    with session_lock(session_id):
+        call_res = initiate_recovery_call(
+            to_phone=target_phone,
+            session_id=session_id,
+            customer_name=f"Customer {cust_id}",
+            amount=amount,
+        )
+        log_audit_event(session, "twilio_call_initiated", action="telephony_outbound_call", details={
+            "phone": target_phone,
+            "status": call_res.get("status"),
+            "sid": call_res.get("sid"),
+            "mock": call_res.get("mock", False),
+        })
+        if is_mongodb_configured():
+            try:
+                recovery_session_repository.update(session_id, session)
+            except Exception:
+                pass
+
+    return {
+        "status": "ok",
+        "telephony": call_res,
+        "session_id": session_id,
+        "message": f"Twilio outbound call initiated to {target_phone}",
+    }
+
+
+@app.post("/api/telephony/sms/{session_id}")
+async def trigger_twilio_sms(
+    session_id: str,
+    payload: TelephonyActionRequest | None = None,
+    user: dict = Depends(require_role("merchant", "admin")),
+) -> dict:
+    """Dispatch an SMS recovery link via Twilio to the customer."""
+    dataset = data_store.get(user["username"])
+    session = dataset.recovery_sessions.get(session_id)
+    if session is None and is_mongodb_configured():
+        session = recovery_session_repository.get(session_id, merchant_id=user.get("username"))
+        if session:
+            dataset.recovery_sessions[session_id] = session
+
+    if session is None:
+        raise HTTPException(status_code=404, detail="Recovery session not found")
+
+    target_phone = (payload.phone_number if payload else None) or session.get("customer_phone", "+15551234567")
+    amount = float(session.get("amount", 0.0))
+    pay_url = session.get("payment_url") or f"/pay/{session_id}"
+    public_url = os.environ.get("BASE_CALLBACK_URL", "https://relay-recovery.onrender.com").rstrip("/") + pay_url
+
+    sms_body = (
+        payload.custom_message
+        if payload and payload.custom_message
+        else f"Relay Recovery: Your payment of ${amount:.2f} could not be authorized. Please review and update payment options here: {public_url}"
+    )
+
+    with session_lock(session_id):
+        sms_res = send_recovery_sms(to_phone=target_phone, message=sms_body)
+        log_audit_event(session, "twilio_sms_sent", action="telephony_outbound_sms", details={
+            "phone": target_phone,
+            "sid": sms_res.get("sid"),
+            "mock": sms_res.get("mock", False),
+        })
+        if is_mongodb_configured():
+            try:
+                recovery_session_repository.update(session_id, session)
+            except Exception:
+                pass
+
+    return {
+        "status": "ok",
+        "telephony": sms_res,
+        "session_id": session_id,
+        "message": f"Twilio SMS dispatched to {target_phone}",
+    }
+
+
+@app.post("/api/telephony/twiml/outbound")
+async def outbound_twiml_endpoint(session_id: str = "") -> Response:
+    """TwiML callback serving dynamic interactive speech for outbound Twilio recovery call."""
+    session, dataset = find_session_and_dataset(session_id) if session_id else (None, None)
+    cust_name = f"Customer {session.get('customer_id')}" if session else "Valued Customer"
+    amt = float(session.get("amount", 0.0)) if session else 0.0
+    reason = session.get("failure_reason", "temporary card decline") if session else "temporary authorization issue"
+
+    twiml_xml = generate_outbound_twiml(
+        session_id=session_id,
+        customer_name=cust_name,
+        amount=amt,
+        failure_reason=reason,
+    )
+    return Response(content=twiml_xml, media_type="application/xml")
+
+
 # ===========================================================================
 # MOCK PAYMENT WEBHOOK INGESTION ENDPOINT
 # ===========================================================================
@@ -1016,6 +1159,9 @@ async def payment_webhook(
 
         if found_session:
             sid = found_session["session_id"]
+            log_audit_event(found_session, "webhook_received", details={"event": "payment.captured", "transaction_id": txn_id})
+            log_audit_event(found_session, "payment_captured", details={"amount": amt, "method": method})
+            log_audit_event(found_session, "recovery_auto_stopped", details={"reason": "Payment captured webhook received"})
             resolve_payment_captured(
                 session=found_session,
                 dataset=dataset,
@@ -1037,7 +1183,7 @@ async def payment_webhook(
                 "transaction_id": txn_id,
                 "customer_id": cust_id,
                 "session_id": sid,
-                "session_status": STATE_RECOVERED,
+                "session_status": str(STATE_RECOVERED).lower(),
                 "recovered_amount": found_session.get("recovered_amount", amt),
                 "message": "Payment captured: all pending actions stopped, session marked RECOVERED, audit log recorded.",
             }
@@ -1304,13 +1450,38 @@ class CustomerPaymentProcessRequest(BaseModel):
     simulate_outcome: str = "success"
 
 
-@app.get("/pay/{session_id}")
-async def customer_pay_page(session_id: str) -> FileResponse:
-    """Serve the customer-facing payment recovery page."""
+def _serve_pay_or_fallback() -> Response:
+    return HTMLResponse("<!doctype html><html><head><title>Relay Payment Gateway</title></head><body><h1>Relay Payment Gateway</h1><p>Customer Recovery UI is active on Next.js frontend.</p></body></html>")
+
+
+@app.get("/pay/{session_id}", include_in_schema=False)
+async def customer_pay_page(session_id: str) -> Response:
+    """Serve the customer-facing payment recovery page via React."""
     session, dataset = find_session_and_dataset(session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Recovery payment session not found")
-    return FileResponse("static/pay.html")
+    return _serve_pay_or_fallback()
+
+
+@app.get("/pay", include_in_schema=False)
+async def customer_pay_root() -> Response:
+    """Serve customer payment experience via React."""
+    return _serve_pay_or_fallback()
+
+
+@app.get("/bank/gateway/{session_id}", include_in_schema=False)
+async def bank_gateway_page(session_id: str) -> Response:
+    """Serve the dedicated Bank Gateway interface via React."""
+    session, dataset = find_session_and_dataset(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Recovery payment session not found")
+    return _serve_pay_or_fallback()
+
+
+@app.get("/bank/gateway", include_in_schema=False)
+async def bank_gateway_root() -> Response:
+    """Serve the dedicated Bank Gateway interface simulator via React."""
+    return _serve_pay_or_fallback()
 
 
 @app.get("/api/pay/{session_id}")
@@ -1345,6 +1516,10 @@ async def get_customer_payment_details(session_id: str) -> dict:
         "message": options["message"],
         "can_pay": options["can_pay"],
         "methods": options["methods"],
+        "bank_code": options.get("bank_code", "ISO-96 (Payment Glitch)"),
+        "customer_explanation": options.get("customer_explanation", ""),
+        "merchant_guidance": options.get("merchant_guidance", ""),
+        "intelligence": options.get("intelligence", {}),
         "audit_events": [e["event"] for e in session.get("audit_trail", [])],
     }
 
@@ -1424,7 +1599,7 @@ async def customer_process_payment(
             "recovered": True,
             "amount": session.get("amount", 0.0),
             "payment_method": request.payment_method,
-            "session_status": session.get("status", "recovered"),
+            "session_status": str(session.get("status", "recovered")).lower(),
             "transaction_id": session.get("transaction_id"),
             "message": "Payment successful",
         }
@@ -1450,6 +1625,118 @@ async def customer_process_payment(
             "session_status": session.get("status"),
             "attempt_count": session["attempt_count"],
         }
+
+
+class BankAuthorizeRequest(BaseModel):
+    bank_name: str = "HSBC Global Gateway"
+    auth_method: str = "3DS_OTP"  # 3DS_OTP, NET_BANKING, UPI_PUSH
+    payment_method: str = "UPI"
+    simulate_status: str = "approved"  # approved or declined
+    decline_reason: str | None = None
+
+
+@app.post("/api/pay/{session_id}/bank-authorize")
+async def bank_authorize_payment(
+    session_id: str, request: BankAuthorizeRequest
+) -> dict:
+    """Authentic Bank Gateway / 3D-Secure Authorization endpoint.
+
+    Executes bank authorization, logs bank-level audit event, and completes payment recovery.
+    """
+    session, dataset = find_session_and_dataset(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Recovery payment session not found")
+
+    with session_lock(session_id):
+        # Guard: Check if already recovered
+        if session.get("status") in (STATE_RECOVERED, "recovered", "completed"):
+            return {
+                "status": "success",
+                "bank_status": "ALREADY_COMPLETED",
+                "approval_code": "AUTH_EXISTING",
+                "bank_name": request.bank_name,
+                "recovered": True,
+                "amount": session.get("recovered_amount", session.get("amount", 0.0)),
+                "message": "Payment already completed with issuing bank.",
+            }
+
+        # Guard: Permanent failure check
+        if not session.get("is_recoverable", True) or session.get("failure_category") == "permanent":
+            raise HTTPException(
+                status_code=400,
+                detail="This transaction cannot be authorized because the payment failure is permanent.",
+            )
+
+        if request.simulate_status == "approved":
+            approval_code = f"AUTH_{uuid.uuid4().hex[:8].upper()}"
+            log_audit_event(session, "bank_authorization_success", action="bank_gateway_approval", details={
+                "bank_name": request.bank_name,
+                "auth_method": request.auth_method,
+                "payment_method": request.payment_method,
+                "approval_code": approval_code,
+                "amount": session.get("amount", 0.0),
+            })
+
+            resolve_payment_captured(
+                session=session,
+                dataset=dataset,
+                amount=session.get("amount", 0.0),
+                payment_method=f"{request.bank_name} ({request.payment_method})",
+                source="bank_gateway",
+            )
+
+            if is_mongodb_configured():
+                try:
+                    recovery_session_repository.update(session_id, session)
+                    txn_id = session.get("transaction_id")
+                    if txn_id:
+                        transaction_repository.update_payment_status(
+                            str(txn_id),
+                            "success",
+                            recovery_amount=session.get("amount", 0.0),
+                        )
+                except Exception:
+                    pass
+
+            return {
+                "status": "success",
+                "bank_status": "APPROVED",
+                "approval_code": approval_code,
+                "bank_name": request.bank_name,
+                "recovered": True,
+                "amount": session.get("amount", 0.0),
+                "transaction_id": session.get("transaction_id"),
+                "message": f"Payment successfully authorized by {request.bank_name}",
+            }
+        else:
+            reason = request.decline_reason or "Card issuer declined authorization"
+            session["attempt_count"] = session.get("attempt_count", 0) + 1
+            if session["attempt_count"] >= session.get("max_attempts", 3):
+                session["status"] = STATE_EXHAUSTED
+            else:
+                session["status"] = STATE_PAYMENT_PENDING
+
+            log_audit_event(session, "bank_authorization_declined", action="bank_gateway_decline", details={
+                "bank_name": request.bank_name,
+                "auth_method": request.auth_method,
+                "reason": reason,
+                "attempt_count": session["attempt_count"],
+            })
+
+            if is_mongodb_configured():
+                try:
+                    recovery_session_repository.update(session_id, session)
+                except Exception:
+                    pass
+
+            return {
+                "status": "failed",
+                "bank_status": "DECLINED",
+                "bank_name": request.bank_name,
+                "recovered": False,
+                "message": f"Declined by {request.bank_name}: {reason}",
+                "attempt_count": session["attempt_count"],
+            }
 
 
 # ===========================================================================

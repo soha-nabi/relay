@@ -15,11 +15,9 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the FastAPI application and its served static assets.
+# Copy the FastAPI application
 COPY main.py .
-COPY app.py .
 COPY backend ./backend
-COPY static ./static
 
 # Expose port
 EXPOSE 8000
