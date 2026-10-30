@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Proxy API calls in dev so the browser never hits CORS issues
   async rewrites() {
     const apiBase =
-      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:8001';
+      process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://relay-recovery.onrender.com';
     return [
       {
         source: '/api/backend/:path*',
