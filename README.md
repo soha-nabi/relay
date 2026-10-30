@@ -9,10 +9,11 @@ The platform consists of **three decoupled services**:
 
 | Resource | Link |
 |-----------|------|
-| Frontend Application | https://relay-pi-snowy.vercel.app, https://relay-relaysupportai-6734.vercel.app/|
-| Backend API | https://relay-recovery.onrender.com |
-| API Documentation | https://relay-recovery.onrender.com/docs |
-| GitHub Repository | https://github.com/soha-nabi/relay |
+| **Production Domain** | [relay-ai-git-main-relaysupportai-6734.vercel.app](https://relay-ai-git-main-relaysupportai-6734.vercel.app/) |
+| **Deployment URL** | [relay-2uvo8hyjm-relaysupportai-6734.vercel.app](https://relay-2uvo8hyjm-relaysupportai-6734.vercel.app/) |
+| **Backend API (Render)** | https://relay-recovery.onrender.com |
+| **API Documentation (Swagger)** | https://relay-recovery.onrender.com/docs |
+| **GitHub Repository** | https://github.com/soha-nabi/relay |
 
 ---
 
