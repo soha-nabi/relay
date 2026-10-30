@@ -33,7 +33,15 @@ const getBaseUrl = (): string => {
   if (envUrl && typeof envUrl === 'string' && envUrl.trim()) {
     return envUrl.trim().replace(/\/+$/, '');
   }
-  return 'http://127.0.0.1:8001';
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return 'https://relay-recovery.onrender.com';
+    }
+  }
+  return process.env.NODE_ENV === 'production'
+    ? 'https://relay-recovery.onrender.com'
+    : 'http://127.0.0.1:8001';
 };
 
 export const API_BASE_URL = getBaseUrl();
