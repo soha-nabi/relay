@@ -329,3 +329,35 @@ export const userApi = {
     return data;
   },
 };
+
+// ---------------------------------------------------------------------------
+// 10. Relay Copilot Query API
+// ---------------------------------------------------------------------------
+export interface CopilotAction {
+  label: string;
+  action: string;
+  method?: string;
+  url?: string;
+  query?: string;
+  primary?: boolean;
+}
+
+export interface CopilotQueryResponse {
+  reply: string;
+  intent: string;
+  actions: CopilotAction[];
+  metadata: Record<string, any>;
+}
+
+export const copilotApi = {
+  query: async (params: {
+    query: string;
+    customer_id?: string;
+    session_id?: string;
+    amount?: number;
+    role?: string;
+  }): Promise<CopilotQueryResponse> => {
+    const { data } = await api.post<CopilotQueryResponse>('/api/copilot/query', params);
+    return data;
+  },
+};

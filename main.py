@@ -137,6 +137,26 @@ async def test_email(request: EmailTestRequest):
 app.include_router(auth_router)
 app.include_router(agent_router)
 
+from backend.copilot_engine import process_copilot_query
+
+class CopilotQueryRequest(BaseModel):
+    query: str
+    customer_id: str | None = None
+    session_id: str | None = None
+    amount: float | None = None
+    role: str | None = "merchant"
+
+@app.post("/api/copilot/query")
+async def copilot_query_endpoint(request: CopilotQueryRequest):
+    """Full-fledged intelligent query endpoint for Relay Copilot."""
+    return process_copilot_query(
+        query=request.query,
+        customer_id=request.customer_id,
+        session_id=request.session_id,
+        amount=request.amount,
+        role=request.role or "merchant",
+    )
+
 
 @app.on_event("startup")
 async def _log_registered_routes() -> None:
