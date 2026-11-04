@@ -9,7 +9,7 @@ The platform consists of **three decoupled services**:
 
 | Resource | Link |
 |-----------|------|
-| **Production Domain** | [relay-ai-git-main-relaysupportai-6734.vercel.app](https://relay-ai-git-main-relaysupportai-6734.vercel.app/) |
+| **Production Domain** | [https://relay-ai-support.vercel.app/) |
 | **Deployment URL** | [relay-2uvo8hyjm-relaysupportai-6734.vercel.app](https://relay-2uvo8hyjm-relaysupportai-6734.vercel.app/) |
 | **Backend API (Render)** | https://relay-recovery.onrender.com |
 | **API Documentation (Swagger)** | https://relay-recovery.onrender.com/docs |
